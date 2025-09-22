@@ -4,8 +4,8 @@
 			Condition="Exists('$(MSBuildThisFileDirectory)/../Directory.Build.props')"/>
 
 	<PropertyGroup>
-		<Authors>aweXpect</Authors>
-		<Description>Template for extension projects for aweXpect.</Description>
+		<Authors>aweXpect.Mocks</Authors>
+		<Description>Mocking framework for aweXpect.</Description>
 		<Copyright>Copyright (c) 2025 - $([System.DateTime]::Now.ToString('yyyy')) Valentin Breuß</Copyright>
 		<RepositoryUrl>https://github.com/aweXpect/aweXpect.Mocks.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
