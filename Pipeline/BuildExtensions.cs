@@ -53,7 +53,7 @@ public static class BuildExtensions
 		client.DefaultRequestHeaders.UserAgent.ParseAdd("aweXpect");
 		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
 		HttpResponseMessage response = await client.GetAsync(
-			$"https://api.github.com/repos/aweXpect/aweXpect.T6e/actions/runs/{runId}/artifacts");
+			$"https://api.github.com/repos/aweXpect/aweXpect.Mocks/actions/runs/{runId}/artifacts");
 
 		string responseContent = await response.Content.ReadAsStringAsync();
 		if (!response.IsSuccessStatusCode)
@@ -72,7 +72,7 @@ public static class BuildExtensions
 				{
 					long artifactId = artifact.GetProperty("id").GetInt64();
 					HttpResponseMessage fileResponse = await client.GetAsync(
-						$"https://api.github.com/repos/aweXpect/aweXpect.T6e/actions/artifacts/{artifactId}/zip");
+						$"https://api.github.com/repos/aweXpect/aweXpect.Mocks/actions/artifacts/{artifactId}/zip");
 					if (fileResponse.IsSuccessStatusCode)
 					{
 						using ZipArchive archive = new(await fileResponse.Content.ReadAsStreamAsync());

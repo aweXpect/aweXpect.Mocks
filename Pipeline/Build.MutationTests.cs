@@ -45,7 +45,7 @@ partial class Build
 			Dictionary<Project, Project[]> projects = new()
 			{
 				{
-					Solution.aweXpect_T6e, [Solution.Tests.aweXpect_T6e_Tests,]
+					Solution.aweXpect_Mocks, [Solution.Tests.aweXpect_Mocks_Tests,]
 				},
 			};
 
@@ -64,7 +64,7 @@ partial class Build
 				                      {
 				                      	"stryker-config": {
 				                      		"project-info": {
-				                      			"name": "github.com/aweXpect/aweXpect.T6e",
+				                      			"name": "github.com/aweXpect/aweXpect.Mocks",
 				                      			"module": "{{project.Key.Name}}",
 				                      			"version": "{{branchName}}"
 				                      		},
@@ -120,7 +120,7 @@ partial class Build
 
 			string body = "## :alien: Mutation Results"
 			              + Environment.NewLine
-			              + $"[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FaweXpect%2FaweXpect.T6e%2Fpull/{prId}/merge)](https://dashboard.stryker-mutator.io/reports/github.com/aweXpect/aweXpect.T6e/pull/{prId}/merge)"
+			              + $"[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FaweXpect%2FaweXpect.Mocks%2Fpull/{prId}/merge)](https://dashboard.stryker-mutator.io/reports/github.com/aweXpect/aweXpect.Mocks/pull/{prId}/merge)"
 			              + Environment.NewLine
 			              + MutationCommentBody;
 			File.WriteAllText(ArtifactsDirectory / "PR_Comment.md", body);
@@ -139,7 +139,7 @@ partial class Build
 			Dictionary<Project, Project[]> projects = new()
 			{
 				{
-					Solution.aweXpect_T6e, [Solution.Tests.aweXpect_T6e_Tests,]
+					Solution.aweXpect_Mocks, [Solution.Tests.aweXpect_Mocks_Tests,]
 				},
 			};
 			string apiKey = Environment.GetEnvironmentVariable("STRYKER_DASHBOARD_API_KEY");
@@ -152,7 +152,7 @@ partial class Build
 				client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
 				// https://stryker-mutator.io/docs/General/dashboard/#send-a-report-via-curl
 				await client.PutAsync(
-					$"https://dashboard.stryker-mutator.io/api/reports/github.com/aweXpect/aweXpect.T6e/{branchName}?module={project.Key.Name}",
+					$"https://dashboard.stryker-mutator.io/api/reports/github.com/aweXpect/aweXpect.Mocks/{branchName}?module={project.Key.Name}",
 					new StringContent(reportComment, new MediaTypeHeaderValue("application/json")));
 			}
 
@@ -167,7 +167,7 @@ partial class Build
 					Credentials tokenAuth = new(GithubToken);
 					gitHubClient.Credentials = tokenAuth;
 					IReadOnlyList<IssueComment> comments =
-						await gitHubClient.Issue.Comment.GetAllForIssue("aweXpect", "aweXpect.T6e", prId);
+						await gitHubClient.Issue.Comment.GetAllForIssue("aweXpect", "aweXpect.Mocks", prId);
 					long? commentId = null;
 					Log.Information($"Found {comments.Count} comments");
 					foreach (IssueComment comment in comments)
@@ -182,12 +182,12 @@ partial class Build
 					if (commentId == null)
 					{
 						Log.Information($"Create comment:\n{body}");
-						await gitHubClient.Issue.Comment.Create("aweXpect", "aweXpect.T6e", prId, body);
+						await gitHubClient.Issue.Comment.Create("aweXpect", "aweXpect.Mocks", prId, body);
 					}
 					else
 					{
 						Log.Information($"Update comment:\n{body}");
-						await gitHubClient.Issue.Comment.Update("aweXpect", "aweXpect.T6e", commentId.Value, body);
+						await gitHubClient.Issue.Comment.Update("aweXpect", "aweXpect.Mocks", commentId.Value, body);
 					}
 				}
 			}

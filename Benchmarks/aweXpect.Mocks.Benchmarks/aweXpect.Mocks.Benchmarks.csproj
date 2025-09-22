@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Source\aweXpect.T6e\aweXpect.T6e.csproj"/>
+		<ProjectReference Include="..\..\Source\aweXpect.Mocks\aweXpect.Mocks.csproj"/>
 	</ItemGroup>
 
 </Project>

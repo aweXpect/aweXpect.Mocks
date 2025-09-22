@@ -14,7 +14,7 @@ partial class Build
 		.DependsOn(Compile)
 		.Executes(() =>
 		{
-			Project project = Solution.Tests.aweXpect_T6e_Api_Tests;
+			Project project = Solution.Tests.aweXpect_Mocks_Api_Tests;
 
 			DotNetTest(s => s
 				.SetConfiguration(Configuration == Configuration.Debug ? "Debug" : "Release")
