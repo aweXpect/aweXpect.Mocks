@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using aweXpect.Mocks.Internals;
+using aweXpect.Mocks.SourceGenerators.Internals;
 using Microsoft.CodeAnalysis;
 
-namespace aweXpect.Mocks.Entities;
+namespace aweXpect.Mocks.SourceGenerators.Entities;
 
 internal readonly record struct Method
 {
@@ -20,10 +20,11 @@ internal readonly record struct Method
 	public string Name { get; }
 	public EquatableArray<MethodParameter> Parameters { get; }
 
-	public void AppendSignatureTo(StringBuilder sb)
+	public void AppendSignatureTo(StringBuilder sb, string[] namespaces)
 	{
-		sb.Append(Accessibility.ToVisibilityString()).Append(' ').Append(ReturnType).Append(' ').Append(Name)
-			.Append('(');
+		sb.Append(Accessibility.ToVisibilityString()).Append(' ')
+			.Append(ReturnType.GetMinimizedString(namespaces)).Append(' ')
+			.Append(Name).Append('(');
 		int index = 0;
 		foreach (MethodParameter parameter in Parameters)
 		{
@@ -32,7 +33,7 @@ internal readonly record struct Method
 				sb.Append(", ");
 			}
 
-			sb.Append(parameter.Type).Append(' ').Append(parameter.Name);
+			sb.Append(parameter.Type.GetMinimizedString(namespaces)).Append(' ').Append(parameter.Name);
 		}
 
 		sb.Append(')');

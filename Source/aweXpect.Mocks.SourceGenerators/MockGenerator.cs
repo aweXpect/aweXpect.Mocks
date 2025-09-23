@@ -1,13 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Text;
-using aweXpect.Mocks.Entities;
-using aweXpect.Mocks.Internals;
+using aweXpect.Mocks.SourceGenerators.Entities;
+using aweXpect.Mocks.SourceGenerators.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace aweXpect.Mocks;
+namespace aweXpect.Mocks.SourceGenerators;
 
 /// <summary>
 ///     The <see cref="IIncrementalGenerator" /> for generating mocks.
@@ -17,10 +17,6 @@ public class MockGenerator : IIncrementalGenerator
 {
 	void IIncrementalGenerator.Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-			"Mock.g.cs",
-			SourceText.From(SourceGeneration.Mock, Encoding.UTF8)));
-
 		ConcurrentDictionary<string, MockClass> mocks = new();
 		IncrementalValuesProvider<MockClass> expectationsToGenerate = context.SyntaxProvider
 			.CreateSyntaxProvider(

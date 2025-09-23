@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace aweXpect.Mocks.Internals;
+namespace aweXpect.Mocks.SourceGenerators.Internals;
 
 /// <summary>
 /// An immutable, equatable array. This is equivalent to <see cref="Array"/> but with value equality support.

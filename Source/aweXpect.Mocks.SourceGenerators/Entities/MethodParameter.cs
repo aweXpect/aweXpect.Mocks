@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace aweXpect.Mocks.Entities;
+namespace aweXpect.Mocks.SourceGenerators.Entities;
 
 internal readonly record struct MethodParameter
 {

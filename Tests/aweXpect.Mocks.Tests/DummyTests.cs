@@ -7,6 +7,7 @@ public sealed class DummyTests
 	{
 		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
 		Mock<IUserService> mock2 = Mock.For<IUserService>();
+		mock.Setup(m => m.AddUser(With<string>.Matching(x => true))).Returns(true);
 
 		IUserRepository repository = mock.Object;
 

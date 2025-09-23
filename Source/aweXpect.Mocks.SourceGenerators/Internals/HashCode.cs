@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace aweXpect.Mocks.Internals;
+namespace aweXpect.Mocks.SourceGenerators.Internals;
 
 /// <summary>
 ///     Polyfill for .NET 6 HashCode

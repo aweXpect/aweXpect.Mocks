@@ -1,6 +1,6 @@
-﻿using aweXpect.Mocks.Entities;
+﻿using aweXpect.Mocks.SourceGenerators.Entities;
 
-namespace aweXpect.Mocks.Internals;
+namespace aweXpect.Mocks.SourceGenerators.Internals;
 
 internal static partial class SourceGeneration
 {

@@ -1,10 +1,12 @@
-using aweXpect.Mocks.Internals;
+using aweXpect.Mocks.SourceGenerators.Internals;
 using Microsoft.CodeAnalysis;
 
-namespace aweXpect.Mocks.Entities;
+namespace aweXpect.Mocks.SourceGenerators.Entities;
 
-internal readonly record struct MockClass
+internal record MockClass
 {
+	private string[]? _namespaces;
+
 	public MockClass(ITypeSymbol[] types)
 	{
 		Namespace = types[0].ContainingNamespace.ToString();
@@ -20,7 +22,14 @@ internal readonly record struct MockClass
 	public string Namespace { get; }
 	public string ClassName { get; }
 
-	public IEnumerable<string> GetNamespaces()
+
+	public string[] GetNamespaces()
+	{
+		_namespaces ??= EnumerateNamespaces().Distinct().OrderBy(n => n).ToArray();
+		return _namespaces;
+	}
+
+	private IEnumerable<string> EnumerateNamespaces()
 	{
 		yield return Namespace;
 		foreach (Method method in Methods)

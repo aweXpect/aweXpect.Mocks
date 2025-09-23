@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace aweXpect.Mocks.Internals;
+namespace aweXpect.Mocks.SourceGenerators.Internals;
 
 internal static partial class SourceGeneration
 {
@@ -30,12 +30,6 @@ internal static partial class SourceGeneration
 					return _value as Mock<T>;
 				}
 			}
-		}
-
-		public abstract class Mock<T>
-		{
-			public abstract T Object { get; }
-			public static implicit operator T(Mock<T> mock) => mock.Object;
 		}
 		#nullable disable
 		""";

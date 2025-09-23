@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Source\aweXpect.Mocks\aweXpect.Mocks.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\Source\aweXpect.Mocks.SourceGenerators\aweXpect.Mocks.SourceGenerators.csproj" OutputItemType="Analyzer" />
+		<ProjectReference Include="..\..\Source\aweXpect.Mocks\aweXpect.Mocks.csproj" />
+		
 	</ItemGroup>
 
 </Project>
