@@ -10,9 +10,11 @@ public static class With
 	/// <summary>
 	///     Matches any parameter of type <typeparamref name="T" />.
 	/// </summary>
-	public static T Any<T>()
+	public static MatchParameter<T> Any<T>() => new MatchParameterType<T>();
+
+	private sealed class MatchParameterType<T> : MatchParameter<T>
 	{
-		return default!;
+		protected override bool Matches(T value) => true;
 	}
 }
 
@@ -25,15 +27,11 @@ public static class With<T>
 	///     Matches parameters of type <typeparamref name="T" />, if the <paramref name="predicate" /> returns
 	///     <see langword="true" />
 	/// </summary>
-	public static T Matching(Func<T, bool> predicate)
+	public static MatchParameter<T> Matching(Func<T, bool> predicate)
+		=> new MatchParameterPredicate(predicate);
+
+	private sealed class MatchParameterPredicate(Func<T, bool> predicate) : MatchParameter<T>
 	{
-		return default!;
-	}
-	/// <summary>
-	///     Matches parameters of type <typeparamref name="T" />, if it is equal to the expected <paramref name="value"/>.
-	/// </summary>
-	public static T EqualTo(T value)
-	{
-		return default!;
+		protected override bool Matches(T value) => predicate(value);
 	}
 }

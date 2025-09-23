@@ -1,80 +1,77 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using aweXpect.Mocks.Setup;
 
-using System;
 // ReSharper disable once CheckNamespace
-using System.Linq.Expressions;
 
 namespace aweXpect.Mocks;
 
-public abstract class Mock<T>
+public abstract class Mock<T> : IMockSetup
 {
+	private readonly List<Invocation> _invocations = [];
+	private readonly List<MockSetup> _setups = [];
+
+	/// <summary>
+	///     Exposes the mocked object instance.
+	/// </summary>
 	public abstract T Object { get; }
-	public static implicit operator T(Mock<T> mock) => mock.Object;
-	
-	public Setup<T> Setup(Expression<Action<T>> expression)
-	{
-		var builder = new Setup.Builder(expression);
-		return new Setup<T>(builder);
-	}
-	
-	public Setup<T, TResult> Setup<TResult>(Expression<Func<T, TResult>> expression)
-	{
-		var builder = new Setup.Builder(expression!);
-		return new Setup<T, TResult>(builder);
-	}
-}
 
-public class Setup
-{
-	public bool Matches(string name)
+	/// <summary>
+	/// Allows setting up the mock.
+	/// </summary>
+	public MockSetup<T> Setup => new MockSetup<T>(this);
+
+	/// <summary>
+	///     Implicitly converts the mock to the mocked object instance.
+	/// </summary>
+	/// <remarks>
+	///     This does not work implicitly (but only with an explicit cast) for interfaces due to
+	///     a limitation of the C# language.
+	/// </remarks>
+	public static implicit operator T(Mock<T> mock)
 	{
-		return _name.Equals(name, StringComparison.Ordinal);
+		return mock.Object;
 	}
 
-	private string _name;
-
-	public Setup(string name)
+	/// <inheritdoc cref="IMockSetup.RegisterSetup(MockSetup)"/>
+	void IMockSetup.RegisterSetup(MockSetup mockSetup)
 	{
-		_name = name;
-	}
-	
-	public class Builder
-	{
-		public Expression _name;
-
-		public Builder(Expression name)
+		if (_invocations.Count > 0)
 		{
-			_name = name;
-		}
-		
-		public Setup Build()
-		{
-			return new Setup("");
+			throw new NotSupportedException("You may not register additional setups after the first usage of the mock");
 		}
 
-		public void Returns(Func<object> func)
+		_setups.Add(mockSetup);
+	}
+
+	private Invocation RegisterInvocation(string name, object[] parameters)
+	{
+		// TODO: Create and register invocation
+		Invocation invocation = new(name, parameters);
+		_invocations.Add(invocation);
+		return invocation;
+	}
+
+	protected TResult Execute<TResult>(string name, params object[] args)
+	{
+		Invocation invocation = RegisterInvocation(name, args);
+
+		MockSetup? matchingSetup = _setups.FirstOrDefault(setup => setup.Matches(invocation));
+		if (matchingSetup is null)
 		{
-			throw new NotImplementedException();
+			//TODO: Throw exception? maybe depending on a behavior setting?
+			return default!;
 		}
-	}
-}
 
-public class Setup<T>
-{
-	protected Setup.Builder Builder { get; }
-
-	public Setup(Setup.Builder builder)
-	{
-		Builder = builder;
+		return matchingSetup.Invoke<TResult>(invocation);
 	}
-	
-	
-}
-public class Setup<T, TResult>(Setup.Builder builder) : Setup<T>(builder)
-{
-	public Setup<T, TResult> Returns(TResult result)
+
+	protected void Execute(string name, params object[] args)
 	{
-		//Builder.Returns(() => result);
-		return this;
+		Invocation invocation = RegisterInvocation(name, args);
+
+		MockSetup? matchingSetup = _setups.FirstOrDefault(setup => setup.Matches(invocation));
+		matchingSetup?.Invoke(invocation);
 	}
 }

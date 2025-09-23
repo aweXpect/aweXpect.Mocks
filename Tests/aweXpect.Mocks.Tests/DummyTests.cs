@@ -1,4 +1,6 @@
-﻿namespace aweXpect.Mocks.Tests;
+﻿using System.Threading;
+
+namespace aweXpect.Mocks.Tests;
 
 public sealed class DummyTests
 {
@@ -7,12 +9,14 @@ public sealed class DummyTests
 	{
 		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
 		Mock<IUserService> mock2 = Mock.For<IUserService>();
-		mock.Setup(m => m.AddUser(With<string>.Matching(x => true))).Returns(true);
+		bool isCalled = false;
+		//mock2.Setup.SaveChangesAsync(CancellationToken.None).Callback(_ => { isCalled = true; }).Returns(_ => Task.CompletedTask);
+		//mock.Setup(m => m.AddUser(With<string>.Matching(x => true))).Returns(true);
 
-		IUserRepository repository = mock.Object;
+		IUserService repository = mock2.Object;
 
-		var result = repository.AddUser("foo");
+		repository.SaveChanges();
 
-		await That(result).IsTrue();
+		await That(isCalled).IsTrue();
 	}
 }
