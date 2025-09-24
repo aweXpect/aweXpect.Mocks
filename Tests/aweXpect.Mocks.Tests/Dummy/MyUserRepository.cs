@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace aweXpect.Mocks.Tests;
+namespace aweXpect.Mocks.Tests.Dummy;
 
 public class MyUserRepository
 {
+	public virtual List<int> Values { get; private set; }
 	private readonly List<string> _users = new();
 
 	public void AddUser(string email)

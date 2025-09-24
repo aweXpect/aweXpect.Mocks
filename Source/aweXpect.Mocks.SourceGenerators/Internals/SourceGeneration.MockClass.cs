@@ -16,6 +16,7 @@ internal static partial class SourceGeneration
 		}
 
 		sb.Append("""
+		          using aweXpect.Mocks.Invocations;
 		          using aweXpect.Mocks.Setup;
 
 		          namespace aweXpect.Mocks.Implementations;
@@ -29,6 +30,43 @@ internal static partial class SourceGeneration
 			.Append(" : ").AppendLine(mockClass.ClassName);
 		sb.AppendLine("\t{");
 
+		foreach (Property property in mockClass.Properties)
+		{
+			sb.Append("\t\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(property.Name).AppendLine("\" />");
+			sb.Append("\t\t").Append(property.Accessibility.ToVisibilityString()).Append(' ')
+				.Append(property.Type.GetMinimizedString(namespaces))
+				.Append(" ").Append(property.Name).AppendLine();
+			sb.AppendLine("\t\t{");
+			if (property.Getter != null)
+			{
+				sb.Append("\t\t\t");
+				if (property.Getter.Value.Accessibility != property.Accessibility)
+				{
+					sb.Append(property.Getter.Value.Accessibility.ToVisibilityString()).Append(' ');
+				}
+				sb.AppendLine("get");
+				sb.AppendLine("\t\t\t{");
+				sb.Append("\t\t\t\treturn mock.Get<")
+					.Append(property.Type.GetMinimizedString(namespaces))
+					.Append(">(nameof(").Append(property.Name).AppendLine("));");
+				sb.AppendLine("\t\t\t}");
+			}
+			if (property.Setter != null)
+			{
+				sb.Append("\t\t\t");
+				if (property.Setter.Value.Accessibility != property.Accessibility)
+				{
+					sb.Append(property.Setter.Value.Accessibility.ToVisibilityString()).Append(' ');
+				}
+				sb.AppendLine("set");
+				sb.AppendLine("\t\t\t{");
+				sb.Append("\t\t\t\tmock.Set(nameof(").Append(property.Name).AppendLine("), value);");
+				sb.AppendLine("\t\t\t}");
+			}
+
+			sb.AppendLine("\t\t}");
+			sb.AppendLine();
+		}
 		foreach (Method method in mockClass.Methods)
 		{
 			sb.Append("\t\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(method.Name)
@@ -77,11 +115,32 @@ internal static partial class SourceGeneration
 		sb.AppendLine("\t}");
 
 		sb.AppendLine();
+		sb.Append("\textension(MockSetup<").Append(mockClass.ClassName).AppendLine("> mock)");
+		sb.AppendLine("\t{");
+		foreach (Property property in mockClass.Properties)
+		{
+			sb.Append("\t\tpublic PropertySetup<").Append(property.Type.GetMinimizedString(namespaces)).Append("> ")
+				.Append(property.Name).AppendLine();
+
+			sb.AppendLine("\t\t{");
+			sb.AppendLine("\t\t\tget");
+			sb.AppendLine("\t\t\t{");
+			sb.Append("\t\t\t\tvar setup = new PropertySetup<").Append(property.Type.GetMinimizedString(namespaces)).Append(">();").AppendLine();
+			sb.AppendLine("\t\t\t\tif (mock is IMockSetup mockSetup)");
+			sb.AppendLine("\t\t\t\t{");
+			sb.Append("\t\t\t\t\tmockSetup.RegisterProperty(\"").Append(property.Name).Append("\", setup);").AppendLine();
+			sb.AppendLine("\t\t\t\t}");
+			sb.AppendLine("\t\t\t\treturn setup;");
+			sb.AppendLine("\t\t\t}");
+			sb.AppendLine("\t\t}");
+			sb.AppendLine();
+		}
+		
 		foreach (Method method in mockClass.Methods)
 		{
 			if (method.ReturnType != Type.Void)
 			{
-				sb.Append("\tpublic static SetupMethodWithReturnValue<")
+				sb.Append("\t\tpublic MethodWithReturnValueSetup<")
 					.Append(method.ReturnType.GetMinimizedString(namespaces));
 				foreach (MethodParameter parameter in method.Parameters)
 				{
@@ -89,16 +148,21 @@ internal static partial class SourceGeneration
 				}
 
 				sb.Append("> ");
-				sb.Append(method.Name).Append("(this MockSetup<").Append(mockClass.ClassName).Append("> mock");
+				sb.Append(method.Name).Append("(");
+				int i = 0;
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
+					if (i++ > 0)
+					{
+						sb.Append(", ");
+					}
+					sb.Append("With.MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 
 				sb.Append(")").AppendLine();
-				sb.AppendLine("\t{");
-				sb.Append("\t\tvar setup = new SetupMethodWithReturnValue<")
+				sb.AppendLine("\t\t{");
+				sb.Append("\t\t\tvar setup = new MethodWithReturnValueSetup<")
 					.Append(method.ReturnType.GetMinimizedString(namespaces));
 				foreach (MethodParameter parameter in method.Parameters)
 				{
@@ -113,16 +177,16 @@ internal static partial class SourceGeneration
 				}
 
 				sb.Append(");").AppendLine();
-				sb.AppendLine("\t\tif (mock is IMockSetup mockSetup)");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t\tmockSetup.RegisterSetup(setup);");
+				sb.AppendLine("\t\t\tif (mock is IMockSetup mockSetup)");
+				sb.AppendLine("\t\t\t{");
+				sb.AppendLine("\t\t\t\tmockSetup.RegisterMethod(setup);");
+				sb.AppendLine("\t\t\t}");
+				sb.AppendLine("\t\t\treturn setup;");
 				sb.AppendLine("\t\t}");
-				sb.AppendLine("\t\treturn setup;");
-				sb.AppendLine("\t}");
 			}
 			else
 			{
-				sb.Append("\tpublic static SetupMethodWithoutReturnValue");
+				sb.Append("\t\tpublic MethodWithoutReturnValueSetup");
 				if (method.Parameters.Count > 0)
 				{
 					sb.Append('<');
@@ -140,17 +204,21 @@ internal static partial class SourceGeneration
 					sb.Append('>');
 				}
 
-				sb.Append(' ').Append(method.Name).Append("(this MockSetup<").Append(mockClass.ClassName)
-					.Append("> mock");
+				sb.Append(' ').Append(method.Name).Append("(");
+				int i = 0;
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
+					if (i++ > 0)
+					{
+						sb.Append(", ");
+					}
+					sb.Append("With.MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 
 				sb.Append(")").AppendLine();
-				sb.AppendLine("\t{");
-				sb.Append("\t\tvar setup = new SetupMethodWithoutReturnValue");
+				sb.AppendLine("\t\t{");
+				sb.Append("\t\t\tvar setup = new MethodWithoutReturnValueSetup");
 
 				if (method.Parameters.Count > 0)
 				{
@@ -176,16 +244,17 @@ internal static partial class SourceGeneration
 				}
 
 				sb.Append(");").AppendLine();
-				sb.AppendLine("\t\tif (mock is IMockSetup mockSetup)");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t\tmockSetup.RegisterSetup(setup);");
+				sb.AppendLine("\t\t\tif (mock is IMockSetup mockSetup)");
+				sb.AppendLine("\t\t\t{");
+				sb.AppendLine("\t\t\t\tmockSetup.RegisterMethod(setup);");
+				sb.AppendLine("\t\t\t}");
+				sb.AppendLine("\t\t\treturn setup;");
 				sb.AppendLine("\t\t}");
-				sb.AppendLine("\t\treturn setup;");
-				sb.AppendLine("\t}");
 			}
 
 			sb.AppendLine();
 		}
+		sb.AppendLine("\t}");
 
 		sb.AppendLine("}");
 
