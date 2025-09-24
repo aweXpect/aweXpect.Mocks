@@ -9,12 +9,12 @@ public sealed class DummyTests
 		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
 		Mock<IUserService> mock2 = Mock.For<IUserService>();
 		Mock<MyUserRepository> mock3 = Mock.For<MyUserRepository>();
-		//mock3.Setup.RemoveUser("foo").Callback(() => isCalled = true).Returns(true);
-		//
-		//mock3.Setup.Values
-		//	.InitializeWith([1, 2,])
-		//	.OnGet(() => { isCalled = true; })
-		//	.OnSet(value => _ = value);
+		mock3.Setup.RemoveUser("foo").Callback(() => isCalled = true).Returns(true);
+		
+		mock3.Setup.Values
+			.InitializeWith([1, 2,])
+			.OnGet(() => { isCalled = true; })
+			.OnSet(value => _ = value);
 
 		MyUserRepository repository = mock3.Object;
 

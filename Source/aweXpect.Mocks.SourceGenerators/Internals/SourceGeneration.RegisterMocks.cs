@@ -8,7 +8,6 @@ internal static partial class SourceGeneration
 	{
 		string result = """
 		                using System;
-		                using aweXpect.Mocks.Implementations;
 		                """;
 		foreach (string? @namespace in mocks.Select(x => x.Namespace).Distinct().OrderBy(x => x))
 		{

@@ -19,7 +19,7 @@ internal static partial class SourceGeneration
 		          using aweXpect.Mocks.Invocations;
 		          using aweXpect.Mocks.Setup;
 
-		          namespace aweXpect.Mocks.Implementations;
+		          namespace aweXpect.Mocks;
 
 		          #nullable enable
 
