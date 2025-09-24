@@ -13,8 +13,20 @@ internal record MockClass
 		IsInterface = types[0].TypeKind == TypeKind.Interface;
 		FileName = $"MockFor{ClassName}.g.cs";
 		Methods = new EquatableArray<Method>(
-			types[0].GetMembers().OfType<IMethodSymbol>().Where(x => IsInterface || x.IsVirtual).Select(x => new Method(x)).ToArray());
+			types[0].GetMembers().OfType<IMethodSymbol>()
+				// Exclude getter/setter methods
+				.Where(x => x.AssociatedSymbol is null)
+				.Where(x => IsInterface || x.IsVirtual)
+				.Select(x => new Method(x))
+				.ToArray());
+		Properties = new EquatableArray<Property>(
+			types[0].GetMembers().OfType<IPropertySymbol>()
+				.Where(x => IsInterface || x.IsVirtual)
+				.Select(x => new Property(x))
+				.ToArray());
 	}
+
+	public EquatableArray<Property> Properties { get; }
 
 	public bool IsInterface { get; }
 
@@ -41,6 +53,13 @@ internal record MockClass
 				         .Where(n => n is not null))
 			{
 				yield return @namespace!;
+			}
+		}
+		foreach (Property property in Properties)
+		{
+			if (property.Type.Namespace != null)
+			{
+				yield return property.Type.Namespace;
 			}
 		}
 	}

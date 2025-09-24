@@ -1,9 +1,9 @@
-﻿namespace aweXpect.Mocks;
+﻿namespace aweXpect.Mocks.Invocations;
 
 /// <summary>
 ///     An invocation of a method.
 /// </summary>
-public class Invocation(string name, object[] parameters)
+public class MethodInvocation(string name, object?[] parameters) : Invocation
 {
 	/// <summary>
 	///     The name of the method.
@@ -13,5 +13,5 @@ public class Invocation(string name, object[] parameters)
 	/// <summary>
 	///     The parameters of the method.
 	/// </summary>
-	public object[] Parameters { get; } = parameters;
+	public object?[] Parameters { get; } = parameters;
 }

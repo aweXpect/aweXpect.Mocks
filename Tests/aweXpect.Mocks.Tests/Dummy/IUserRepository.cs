@@ -1,4 +1,4 @@
-﻿namespace aweXpect.Mocks.Tests;
+﻿namespace aweXpect.Mocks.Tests.Dummy;
 
 public interface IUserRepository
 {

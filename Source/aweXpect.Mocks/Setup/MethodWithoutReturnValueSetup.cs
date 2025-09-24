@@ -1,47 +1,49 @@
 ﻿using System;
+using aweXpect.Mocks.Invocations;
 
 namespace aweXpect.Mocks.Setup;
 
 /// <summary>
 ///     Setup for a method returning <see langword="void" />
 /// </summary>
-public class SetupMethodWithoutReturnValue(string name) : MockSetup
+public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 {
 	private Action? _callback;
 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithoutReturnValue Callback(Action callback)
+	public MethodWithoutReturnValueSetup Callback(Action callback)
 	{
 		_callback = callback;
 		return this;
 	}
 
-	/// <inheritdoc cref="MockSetup.ExecuteCallback(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation) => _callback?.Invoke();
 
-	/// <inheritdoc cref="MockSetup.GetReturnValue{TResult}(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
 	protected override TResult GetReturnValue<TResult>(Invocation invocation)
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
-	/// <inheritdoc cref="MockSetup.Matches(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation.Name.Equals(name) && invocation.Parameters.Length == 0;
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 0;
 }
 
 /// <summary>
 ///     Setup for a method with one parameter <typeparamref name="T" /> returning <see langword="void" />.
 /// </summary>
-public class SetupMethodWithoutReturnValue<T>(string name, MatchParameter match) : MockSetup
+public class MethodWithoutReturnValueSetup<T>(string name, With.MatchParameter match) : MethodSetup
 {
 	private Action<T>? _callback;
 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithoutReturnValue<T> Callback(Action callback)
+	public MethodWithoutReturnValueSetup<T> Callback(Action callback)
 	{
 		_callback = _ => callback();
 		return this;
@@ -50,27 +52,28 @@ public class SetupMethodWithoutReturnValue<T>(string name, MatchParameter match)
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithoutReturnValue<T> Callback(Action<T> callback)
+	public MethodWithoutReturnValueSetup<T> Callback(Action<T> callback)
 	{
 		_callback = callback;
 		return this;
 	}
 
-	/// <inheritdoc cref="MockSetup.ExecuteCallback(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation.Parameters[0] is T p1)
+		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1)
 		{
 			_callback?.Invoke(p1);
 		}
 	}
 
-	/// <inheritdoc cref="MockSetup.GetReturnValue{TResult}(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
 	protected override TResult GetReturnValue<TResult>(Invocation invocation)
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
-	/// <inheritdoc cref="MockSetup.Matches(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation.Name.Equals(name) && invocation.Parameters.Length == 1 && match.Matches(invocation.Parameters[0]);
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }

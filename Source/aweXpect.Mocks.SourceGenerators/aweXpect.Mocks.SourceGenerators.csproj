@@ -5,7 +5,7 @@
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
-        <LangVersion>Latest</LangVersion>
+        <LangVersion>preview</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>

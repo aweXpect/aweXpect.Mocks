@@ -1,11 +1,12 @@
 ﻿using System;
+using aweXpect.Mocks.Invocations;
 
 namespace aweXpect.Mocks.Setup;
 
 /// <summary>
 ///     Setup for a method returning <typeparamref name="TReturn" />.
 /// </summary>
-public class SetupMethodWithReturnValue<TReturn>(string name) : MockSetup
+public class MethodWithReturnValueSetup<TReturn>(string name) : MethodSetup
 {
 	private Action? _callback;
 	private Func<TReturn>? _returnCallback;
@@ -13,7 +14,7 @@ public class SetupMethodWithReturnValue<TReturn>(string name) : MockSetup
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn> Callback(Action callback)
+	public MethodWithReturnValueSetup<TReturn> Callback(Action callback)
 	{
 		_callback = callback;
 		return this;
@@ -22,7 +23,7 @@ public class SetupMethodWithReturnValue<TReturn>(string name) : MockSetup
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to get the return value for this method.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn> Returns(Func<TReturn> callback)
+	public MethodWithReturnValueSetup<TReturn> Returns(Func<TReturn> callback)
 	{
 		_returnCallback = callback;
 		return this;
@@ -31,16 +32,16 @@ public class SetupMethodWithReturnValue<TReturn>(string name) : MockSetup
 	/// <summary>
 	///     Registers the <paramref name="returnValue" /> for this method.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn> Returns(TReturn returnValue)
+	public MethodWithReturnValueSetup<TReturn> Returns(TReturn returnValue)
 	{
 		_returnCallback = () => returnValue;
 		return this;
 	}
 
-	/// <inheritdoc cref="MockSetup.ExecuteCallback(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation) => _callback?.Invoke();
 
-	/// <inheritdoc cref="MockSetup.GetReturnValue{TResult}(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
 	protected override TResult GetReturnValue<TResult>(Invocation invocation)
 		where TResult : default
 	{
@@ -57,16 +58,17 @@ public class SetupMethodWithReturnValue<TReturn>(string name) : MockSetup
 		throw new NotSupportedException("The method type does not match");
 	}
 
-	/// <inheritdoc cref="MockSetup.Matches(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation.Name.Equals(name) && invocation.Parameters.Length == 0;
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 0;
 }
 
 /// <summary>
 ///     Setup for a method with one parameter <typeparamref name="T" /> returning <typeparamref name="TReturn" />.
 /// </summary>
-public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter match)
-	: MockSetup
+public class MethodWithReturnValueSetup<TReturn, T>(string name, With.MatchParameter match)
+	: MethodSetup
 {
 	private Action<T>? _callback;
 	private Func<T, TReturn>? _returnCallback;
@@ -74,7 +76,7 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn, T> Callback(Action callback)
+	public MethodWithReturnValueSetup<TReturn, T> Callback(Action callback)
 	{
 		_callback = _ => callback();
 		return this;
@@ -83,7 +85,7 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn, T> Callback(Action<T> callback)
+	public MethodWithReturnValueSetup<TReturn, T> Callback(Action<T> callback)
 	{
 		_callback = callback;
 		return this;
@@ -92,7 +94,7 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to get the return value for this method.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn, T> Returns(Func<T, TReturn> callback)
+	public MethodWithReturnValueSetup<TReturn, T> Returns(Func<T, TReturn> callback)
 	{
 		_returnCallback = callback;
 		return this;
@@ -101,7 +103,7 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to get the return value for this method.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn, T> Returns(Func<TReturn> callback)
+	public MethodWithReturnValueSetup<TReturn, T> Returns(Func<TReturn> callback)
 	{
 		_returnCallback = _ => callback();
 		return this;
@@ -110,22 +112,22 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 	/// <summary>
 	///     Registers the <paramref name="returnValue" /> for this method.
 	/// </summary>
-	public SetupMethodWithReturnValue<TReturn, T> Returns(TReturn returnValue)
+	public MethodWithReturnValueSetup<TReturn, T> Returns(TReturn returnValue)
 	{
 		_returnCallback = _ => returnValue;
 		return this;
 	}
 
-	/// <inheritdoc cref="MockSetup.ExecuteCallback(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation.Parameters[0] is T p1)
+		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1)
 		{
 			_callback?.Invoke(p1);
 		}
 	}
 
-	/// <inheritdoc cref="MockSetup.GetReturnValue{TResult}(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
 	protected override TResult GetReturnValue<TResult>(Invocation invocation)
 		where TResult : default
 	{
@@ -134,7 +136,8 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 			throw new NotSupportedException("No return value is specified");
 		}
 
-		if (invocation.Parameters[0] is T p1 && _returnCallback(p1) is TResult result)
+		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1 &&
+		    _returnCallback(p1) is TResult result)
 		{
 			return result;
 		}
@@ -142,7 +145,8 @@ public class SetupMethodWithReturnValue<TReturn, T>(string name, MatchParameter 
 		throw new NotSupportedException("The method type does not match");
 	}
 
-	/// <inheritdoc cref="MockSetup.Matches(Invocation)" />
+	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation.Name.Equals(name) && invocation.Parameters.Length == 1 && match.Matches(invocation.Parameters[0]);
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }
