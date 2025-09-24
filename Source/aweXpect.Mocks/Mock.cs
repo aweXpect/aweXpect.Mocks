@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using aweXpect.Mocks.Setup;
 
-// ReSharper disable once CheckNamespace
-
 namespace aweXpect.Mocks;
 
 /// <summary>
@@ -59,7 +57,7 @@ public abstract class Mock<T> : IMockSetup
 	/// <summary>
 	///     Executes a method and gets the setup return value.
 	/// </summary>
-	protected TResult Execute<TResult>(string name, params object[] args)
+	TResult IMockSetup.Execute<TResult>(string name, params object[] args)
 	{
 		Invocation invocation = RegisterInvocation(name, args);
 
@@ -76,7 +74,7 @@ public abstract class Mock<T> : IMockSetup
 	/// <summary>
 	///     Executes a method returning <see langword="void" />.
 	/// </summary>
-	protected void Execute(string name, params object[] args)
+	void IMockSetup.Execute(string name, params object[] args)
 	{
 		Invocation invocation = RegisterInvocation(name, args);
 

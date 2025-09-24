@@ -49,5 +49,14 @@ public abstract class MockSetup
 public class MockSetup<T>(Mock<T> mock) : IMockSetup
 {
 	/// <inheritdoc cref="IMockSetup.RegisterSetup(MockSetup)" />
-	void IMockSetup.RegisterSetup(MockSetup mockSetup) => ((IMockSetup)mock).RegisterSetup(mockSetup);
+	void IMockSetup.RegisterSetup(MockSetup mockSetup)
+		=> ((IMockSetup)mock).RegisterSetup(mockSetup);
+
+	/// <inheritdoc cref="IMockSetup.Execute{TResult}(string, object[])" />
+	public TResult Execute<TResult>(string name, params object[] args)
+		=> ((IMockSetup)mock).Execute<TResult>(name, args);
+
+	/// <inheritdoc cref="IMockSetup.Execute(string, object[])" />
+	public void Execute(string name, params object[] args)
+		=> ((IMockSetup)mock).Execute(name, args);
 }

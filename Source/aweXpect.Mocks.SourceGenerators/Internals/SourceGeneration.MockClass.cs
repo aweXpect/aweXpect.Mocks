@@ -8,8 +8,9 @@ internal static partial class SourceGeneration
 {
 	public static string GetMockClass(MockClass mockClass)
 	{
+		string[] namespaces = mockClass.GetNamespaces();
 		StringBuilder sb = new();
-		foreach (string @namespace in mockClass.GetNamespaces())
+		foreach (string @namespace in namespaces)
 		{
 			sb.Append("using ").Append(@namespace).AppendLine(";");
 		}
@@ -22,24 +23,26 @@ internal static partial class SourceGeneration
 		          #nullable enable
 
 		          """);
-		sb.Append("public partial class MockFor").Append(mockClass.ClassName)
-			.Append(" : Mock<").Append(mockClass.ClassName).Append(">, ").AppendLine(mockClass.ClassName);
+		sb.Append("public static class For").Append(mockClass.ClassName).AppendLine();
 		sb.AppendLine("{");
+		sb.Append("\tpublic partial class MockObject(IMockSetup mock)")
+			.Append(" : ").AppendLine(mockClass.ClassName);
+		sb.AppendLine("\t{");
 
 		foreach (Method method in mockClass.Methods)
 		{
-			sb.Append("\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(method.Name)
+			sb.Append("\t\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(method.Name)
 				.Append('(').Append(string.Join(",",
-					method.Parameters.Select(p => p.Type.GetMinimizedString(mockClass.GetNamespaces()))))
+					method.Parameters.Select(p => p.Type.GetMinimizedString(namespaces))))
 				.AppendLine(")\" />");
-			sb.Append("\t");
-			method.AppendSignatureTo(sb, mockClass.GetNamespaces());
+			sb.Append("\t\t");
+			method.AppendSignatureTo(sb, mockClass, namespaces);
 			sb.AppendLine();
-			sb.AppendLine("\t{");
+			sb.AppendLine("\t\t{");
 			if (method.ReturnType != Type.Void)
 			{
-				sb.Append("\t\treturn Execute<")
-					.Append(method.ReturnType.GetMinimizedString(mockClass.GetNamespaces()))
+				sb.Append("\t\t\treturn mock.Execute<")
+					.Append(method.ReturnType.GetMinimizedString(namespaces))
 					.Append(">(nameof(").Append(method.Name).Append(")");
 				foreach (MethodParameter p in method.Parameters)
 				{
@@ -50,7 +53,7 @@ internal static partial class SourceGeneration
 			}
 			else
 			{
-				sb.Append("\t\tExecute(nameof(").Append(method.Name).Append(")");
+				sb.Append("\t\t\tmock.Execute(nameof(").Append(method.Name).Append(")");
 				foreach (MethodParameter p in method.Parameters)
 				{
 					sb.Append(", ").Append(p.Name);
@@ -59,45 +62,47 @@ internal static partial class SourceGeneration
 				sb.AppendLine(");");
 			}
 
-			sb.AppendLine("\t}");
+			sb.AppendLine("\t\t}");
 			sb.AppendLine();
 		}
-
-		sb.Append("\t/// <inheritdoc cref=\"Mock{").Append(mockClass.ClassName).AppendLine("}.Object\" />");
-		sb.Append("\tpublic override ").Append(mockClass.ClassName).AppendLine(" Object");
-		sb.AppendLine("\t\t=> this;");
-		sb.AppendLine("}");
+		sb.AppendLine("\t}");
+		sb.Append("\tpublic class Mock : Mock<").Append(mockClass.ClassName).AppendLine(">");
+		sb.AppendLine("\t{");
+		sb.AppendLine("\t\tpublic Mock()");
+		sb.AppendLine("\t\t{");
+		sb.AppendLine("\t\t\tObject = new MockObject(this);");
+		sb.AppendLine("\t\t}");
+		sb.Append("\t\t/// <inheritdoc cref=\"Mock{").Append(mockClass.ClassName).AppendLine("}.Object\" />");
+		sb.Append("\t\tpublic override ").Append(mockClass.ClassName).AppendLine(" Object { get; }");
+		sb.AppendLine("\t}");
 
 		sb.AppendLine();
-		sb.Append("public static class MockFor").Append(mockClass.ClassName).AppendLine("Extensions");
-		sb.AppendLine("{");
-
 		foreach (Method method in mockClass.Methods)
 		{
 			if (method.ReturnType != Type.Void)
 			{
 				sb.Append("\tpublic static SetupMethodWithReturnValue<")
-					.Append(method.ReturnType.GetMinimizedString(mockClass.GetNamespaces()));
+					.Append(method.ReturnType.GetMinimizedString(namespaces));
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", ").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()));
+					sb.Append(", ").Append(parameter.Type.GetMinimizedString(namespaces));
 				}
 
 				sb.Append("> ");
 				sb.Append(method.Name).Append("(this MockSetup<").Append(mockClass.ClassName).Append("> mock");
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()))
+					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 
 				sb.Append(")").AppendLine();
 				sb.AppendLine("\t{");
 				sb.Append("\t\tvar setup = new SetupMethodWithReturnValue<")
-					.Append(method.ReturnType.GetMinimizedString(mockClass.GetNamespaces()));
+					.Append(method.ReturnType.GetMinimizedString(namespaces));
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", ").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()));
+					sb.Append(", ").Append(parameter.Type.GetMinimizedString(namespaces));
 				}
 
 				sb.Append(">").Append("(nameof(").Append(mockClass.ClassName).Append(".").Append(method.Name)
@@ -129,7 +134,7 @@ internal static partial class SourceGeneration
 							sb.Append(", ");
 						}
 
-						sb.Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()));
+						sb.Append(parameter.Type.GetMinimizedString(namespaces));
 					}
 
 					sb.Append('>');
@@ -139,7 +144,7 @@ internal static partial class SourceGeneration
 					.Append("> mock");
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()))
+					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 
@@ -158,7 +163,7 @@ internal static partial class SourceGeneration
 							sb.Append(", ");
 						}
 
-						sb.Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()));
+						sb.Append(parameter.Type.GetMinimizedString(namespaces));
 					}
 
 					sb.Append('>');
