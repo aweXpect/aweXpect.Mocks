@@ -21,20 +21,18 @@ public class MockRegistrationGenerator : IIncrementalGenerator
 			"Mock.g.cs",
 			SourceText.From(SourceGeneration.Mock, Encoding.UTF8)));
 
-		ConcurrentDictionary<string, MockClass> files = new();
 		IncrementalValueProvider<ImmutableArray<MockClass?>> expectationsToRegister = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (s, _) => s.IsMockForInvocationExpressionSyntax(),
-				(ctx, _) => GetSemanticTargetForGeneration(ctx, files))
+				(ctx, _) => GetSemanticTargetForGeneration(ctx))
 			.Where(static m => m is not null)
 			.Collect();
 
 		context.RegisterSourceOutput(expectationsToRegister,
-			(spc, source) => Execute([..source.Where(t => t != null).Cast<MockClass>(),], spc));
+			(spc, source) => Execute([..source.Where(t => t != null).Distinct().Cast<MockClass>(),], spc));
 	}
 
-	private static MockClass? GetSemanticTargetForGeneration(GeneratorSyntaxContext context,
-		ConcurrentDictionary<string, MockClass> files)
+	private static MockClass? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
 	{
 		if (context.Node.TryExtractGenericNameSyntax(context.SemanticModel, out GenericNameSyntax? genericNameSyntax))
 		{
@@ -46,10 +44,7 @@ public class MockRegistrationGenerator : IIncrementalGenerator
 				.Cast<ITypeSymbol>()
 				.ToArray();
 			MockClass mockClassClass = new(types);
-			if (files.TryAdd(mockClassClass.FileName, mockClassClass))
-			{
-				return mockClassClass;
-			}
+			return mockClassClass;
 		}
 
 		return null;

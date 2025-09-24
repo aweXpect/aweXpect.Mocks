@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Text;
 using aweXpect.Mocks.SourceGenerators.Entities;
 using aweXpect.Mocks.SourceGenerators.Internals;
@@ -17,19 +16,17 @@ public class MockGenerator : IIncrementalGenerator
 {
 	void IIncrementalGenerator.Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		ConcurrentDictionary<string, MockClass> mocks = new();
 		IncrementalValuesProvider<MockClass> expectationsToGenerate = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (s, _) => s.IsMockForInvocationExpressionSyntax(),
-				(ctx, _) => GetSemanticTargetForGeneration(ctx, mocks))
+				(ctx, _) => GetSemanticTargetForGeneration(ctx))
 			.Where(static m => m is not null)
-			.SelectMany((x, _) => x!.ToImmutableArray());
+			.SelectMany((x, _) => x!.Distinct().ToImmutableArray());
 
 		context.RegisterSourceOutput(expectationsToGenerate, (spc, source) => Execute(source, spc));
 	}
 
-	private static IEnumerable<MockClass> GetSemanticTargetForGeneration(GeneratorSyntaxContext context,
-		ConcurrentDictionary<string, MockClass> files)
+	private static IEnumerable<MockClass> GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
 	{
 		if (context.Node.TryExtractGenericNameSyntax(context.SemanticModel, out GenericNameSyntax? genericNameSyntax))
 		{
@@ -41,10 +38,7 @@ public class MockGenerator : IIncrementalGenerator
 				.Cast<ITypeSymbol>()
 				.ToArray();
 			MockClass mockClassClass = new(types);
-			if (files.TryAdd(mockClassClass.FileName, mockClassClass))
-			{
-				yield return mockClassClass;
-			}
+			yield return mockClassClass;
 		}
 	}
 
