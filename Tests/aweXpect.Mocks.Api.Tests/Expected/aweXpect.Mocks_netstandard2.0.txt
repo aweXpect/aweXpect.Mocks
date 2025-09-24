@@ -1,9 +1,100 @@
 [assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/aweXpect/aweXpect.Mocks.git")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETStandard,Version=v2.0", FrameworkDisplayName=".NET Standard 2.0")]
-namespace aweXpect
+namespace aweXpect.Mocks
 {
-    public static class DummyExtensions
+    public interface IMockSetup
     {
-        public static aweXpect.Results.AndOrResult<string, aweXpect.Core.IThat<string>> IsAbsolutePath(this aweXpect.Core.IThat<string> subject) { }
+        void RegisterSetup(aweXpect.Mocks.Setup.MockSetup mockSetup);
+    }
+    public class Invocation
+    {
+        public Invocation(string name, object[] parameters) { }
+        public string Name { get; }
+        public object[] Parameters { get; }
+    }
+    public abstract class MatchParameter
+    {
+        protected MatchParameter() { }
+        public abstract bool Matches(object? value);
+    }
+    public abstract class MatchParameter<T> : aweXpect.Mocks.MatchParameter
+    {
+        protected MatchParameter() { }
+        protected abstract bool Matches(T value);
+        public override bool Matches(object? value) { }
+        public static aweXpect.Mocks.MatchParameter<T> op_Implicit(T value) { }
+    }
+    public abstract class Mock<T> : aweXpect.Mocks.IMockSetup
+    {
+        protected Mock() { }
+        public abstract T Object { get; }
+        public aweXpect.Mocks.Setup.MockSetup<T> Setup { get; }
+        protected void Execute(string name, params object[] args) { }
+        protected TResult Execute<TResult>(string name, params object[] args) { }
+        public static T op_Implicit(aweXpect.Mocks.Mock<T> mock) { }
+    }
+    public static class With
+    {
+        public static aweXpect.Mocks.MatchParameter<T> Any<T>() { }
+    }
+    public static class With<T>
+    {
+        public static aweXpect.Mocks.MatchParameter<T> Matching(System.Func<T, bool> predicate) { }
+    }
+}
+namespace aweXpect.Mocks.Setup
+{
+    public abstract class MockSetup
+    {
+        protected MockSetup() { }
+        public int InvocationCount { get; }
+        protected abstract void ExecuteCallback(aweXpect.Mocks.Invocation invocation);
+        protected abstract TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation);
+        public void Invoke(aweXpect.Mocks.Invocation invocation) { }
+        public TResult Invoke<TResult>(aweXpect.Mocks.Invocation invocation) { }
+        public abstract bool Matches(aweXpect.Mocks.Invocation invocation);
+    }
+    public class MockSetup<T> : aweXpect.Mocks.IMockSetup
+    {
+        public MockSetup(aweXpect.Mocks.Mock<T> mock) { }
+    }
+    public class SetupMethodWithReturnValue<TReturn> : aweXpect.Mocks.Setup.MockSetup
+    {
+        public SetupMethodWithReturnValue(string name, System.Func<TReturn> returnCallback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn> Callback(System.Action callback) { }
+        protected override void ExecuteCallback(aweXpect.Mocks.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation) { }
+        public override bool Matches(aweXpect.Mocks.Invocation invocation) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn> Returns(System.Func<TReturn> callback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn> Returns(TReturn returnValue) { }
+    }
+    public class SetupMethodWithReturnValue<TReturn, T> : aweXpect.Mocks.Setup.MockSetup
+    {
+        public SetupMethodWithReturnValue(string name, aweXpect.Mocks.MatchParameter match) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn, T> Callback(System.Action callback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn, T> Callback(System.Action<T> callback) { }
+        protected override void ExecuteCallback(aweXpect.Mocks.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation) { }
+        public override bool Matches(aweXpect.Mocks.Invocation invocation) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn, T> Returns(System.Func<TReturn> callback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn, T> Returns(System.Func<T, TReturn> callback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn, T> Returns(TReturn returnValue) { }
+    }
+    public class SetupMethodWithoutReturnValue : aweXpect.Mocks.Setup.MockSetup
+    {
+        public SetupMethodWithoutReturnValue(string name) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithoutReturnValue Callback(System.Action callback) { }
+        protected override void ExecuteCallback(aweXpect.Mocks.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation) { }
+        public override bool Matches(aweXpect.Mocks.Invocation invocation) { }
+    }
+    public class SetupMethodWithoutReturnValue<T> : aweXpect.Mocks.Setup.MockSetup
+    {
+        public SetupMethodWithoutReturnValue(string name, aweXpect.Mocks.MatchParameter match) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithoutReturnValue<T> Callback(System.Action callback) { }
+        public aweXpect.Mocks.Setup.SetupMethodWithoutReturnValue<T> Callback(System.Action<T> callback) { }
+        protected override void ExecuteCallback(aweXpect.Mocks.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation) { }
+        public override bool Matches(aweXpect.Mocks.Invocation invocation) { }
     }
 }
