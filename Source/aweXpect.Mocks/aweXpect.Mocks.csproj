@@ -7,7 +7,7 @@
 	<ItemGroup>
 		<None
 			Include="$(MSBuildProjectDirectory)\..\aweXpect.Mocks.SourceGenerators\bin\$(Configuration)\netstandard2.0\aweXpect.Mocks.SourceGenerators.dll"
-			Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+			Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
 	</ItemGroup>
 
 </Project>

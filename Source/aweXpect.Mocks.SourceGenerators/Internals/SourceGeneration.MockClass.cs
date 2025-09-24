@@ -87,8 +87,10 @@ internal static partial class SourceGeneration
 				sb.Append(method.Name).Append("(this MockSetup<").Append(mockClass.ClassName).Append("> mock");
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces())).Append("> ").Append(parameter.Name);
+					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()))
+						.Append("> ").Append(parameter.Name);
 				}
+
 				sb.Append(")").AppendLine();
 				sb.AppendLine("\t{");
 				sb.Append("\t\tvar setup = new SetupMethodWithReturnValue<")
@@ -104,6 +106,7 @@ internal static partial class SourceGeneration
 				{
 					sb.Append(", ").Append(p.Name);
 				}
+
 				sb.Append(");").AppendLine();
 				sb.AppendLine("\t\tif (mock is IMockSetup mockSetup)");
 				sb.AppendLine("\t\t{");
@@ -136,8 +139,10 @@ internal static partial class SourceGeneration
 					.Append("> mock");
 				foreach (MethodParameter parameter in method.Parameters)
 				{
-					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces())).Append("> ").Append(parameter.Name);
+					sb.Append(", MatchParameter<").Append(parameter.Type.GetMinimizedString(mockClass.GetNamespaces()))
+						.Append("> ").Append(parameter.Name);
 				}
+
 				sb.Append(")").AppendLine();
 				sb.AppendLine("\t{");
 				sb.Append("\t\tvar setup = new SetupMethodWithoutReturnValue");
@@ -164,6 +169,7 @@ internal static partial class SourceGeneration
 				{
 					sb.Append(", ").Append(p.Name);
 				}
+
 				sb.Append(");").AppendLine();
 				sb.AppendLine("\t\tif (mock is IMockSetup mockSetup)");
 				sb.AppendLine("\t\t{");

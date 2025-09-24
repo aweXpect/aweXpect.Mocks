@@ -25,13 +25,14 @@ internal readonly record struct Type
 
 	public string GetMinimizedString(string[] namespaces)
 	{
-		foreach (var @namespace in namespaces.OrderByDescending(x => x.Length))
+		foreach (string? @namespace in namespaces.OrderByDescending(x => x.Length))
 		{
 			if (Fullname.StartsWith(@namespace + "."))
 			{
 				return Fullname.Substring(@namespace.Length + 1);
 			}
 		}
+
 		return Fullname;
 	}
 }

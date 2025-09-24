@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Text;
 using aweXpect.Mocks.SourceGenerators.Entities;
 using aweXpect.Mocks.SourceGenerators.Internals;
