@@ -3,16 +3,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Source\aweXpect.Mocks.SourceGenerators\aweXpect.Mocks.SourceGenerators.csproj" OutputItemType="Analyzer" />
 		<ProjectReference Include="..\..\Source\aweXpect.Mocks\aweXpect.Mocks.csproj" />
-		
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Remove="Generated\net8.0\aweXpect.Mocks.SourceGenerators\aweXpect.Mocks.SourceGenerators.MockRegistrationGenerator\Mock.g.cs" />
-	  <Compile Remove="Generated\net48\aweXpect.Mocks.SourceGenerators\aweXpect.Mocks.SourceGenerators.MockGenerator\MockForIUserService.g.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Generated\net8.0\aweXpect.Mocks.SourceGenerators\aweXpect.Mocks.SourceGenerators.MockGenerator\" />
 	</ItemGroup>
 
 </Project>

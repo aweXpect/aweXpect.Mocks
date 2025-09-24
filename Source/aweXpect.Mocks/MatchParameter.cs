@@ -45,6 +45,6 @@ public abstract class MatchParameter<T> : MatchParameter
 			_value = value;
 		}
 
-		protected override bool Matches(T value) => value?.Equals(_value) == true;
+		protected override bool Matches(T value) => Equals(value, _value);
 	}
 }

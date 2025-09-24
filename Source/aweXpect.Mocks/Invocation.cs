@@ -1,14 +1,17 @@
 ﻿namespace aweXpect.Mocks;
 
-public class Invocation
+/// <summary>
+///     An invocation of a method.
+/// </summary>
+public class Invocation(string name, object[] parameters)
 {
-	public Invocation(string name, object[] parameters)
-	{
-		Name = name;
-		Parameters = parameters;
-	}
+	/// <summary>
+	///     The name of the method.
+	/// </summary>
+	public string Name { get; } = name;
 
-	public string Name { get; }
-
-	public object[] Parameters { get; }
+	/// <summary>
+	///     The parameters of the method.
+	/// </summary>
+	public object[] Parameters { get; } = parameters;
 }

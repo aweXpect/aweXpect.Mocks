@@ -2,10 +2,6 @@
 [assembly: System.Runtime.Versioning.TargetFramework(".NETStandard,Version=v2.0", FrameworkDisplayName=".NET Standard 2.0")]
 namespace aweXpect.Mocks
 {
-    public interface IMockSetup
-    {
-        void RegisterSetup(aweXpect.Mocks.Setup.MockSetup mockSetup);
-    }
     public class Invocation
     {
         public Invocation(string name, object[] parameters) { }
@@ -24,7 +20,7 @@ namespace aweXpect.Mocks
         public override bool Matches(object? value) { }
         public static aweXpect.Mocks.MatchParameter<T> op_Implicit(T value) { }
     }
-    public abstract class Mock<T> : aweXpect.Mocks.IMockSetup
+    public abstract class Mock<T> : aweXpect.Mocks.Setup.IMockSetup
     {
         protected Mock() { }
         public abstract T Object { get; }
@@ -44,23 +40,25 @@ namespace aweXpect.Mocks
 }
 namespace aweXpect.Mocks.Setup
 {
+    public interface IMockSetup
+    {
+        void RegisterSetup(aweXpect.Mocks.Setup.MockSetup mockSetup);
+    }
     public abstract class MockSetup
     {
         protected MockSetup() { }
         public int InvocationCount { get; }
         protected abstract void ExecuteCallback(aweXpect.Mocks.Invocation invocation);
         protected abstract TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation);
-        public void Invoke(aweXpect.Mocks.Invocation invocation) { }
-        public TResult Invoke<TResult>(aweXpect.Mocks.Invocation invocation) { }
         public abstract bool Matches(aweXpect.Mocks.Invocation invocation);
     }
-    public class MockSetup<T> : aweXpect.Mocks.IMockSetup
+    public class MockSetup<T> : aweXpect.Mocks.Setup.IMockSetup
     {
         public MockSetup(aweXpect.Mocks.Mock<T> mock) { }
     }
     public class SetupMethodWithReturnValue<TReturn> : aweXpect.Mocks.Setup.MockSetup
     {
-        public SetupMethodWithReturnValue(string name, System.Func<TReturn> returnCallback) { }
+        public SetupMethodWithReturnValue(string name) { }
         public aweXpect.Mocks.Setup.SetupMethodWithReturnValue<TReturn> Callback(System.Action callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocation invocation) { }
         protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocation invocation) { }

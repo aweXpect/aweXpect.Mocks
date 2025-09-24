@@ -39,12 +39,11 @@ internal record MockClass
 				yield return method.ReturnType.Namespace;
 			}
 
-			foreach (MethodParameter parameter in method.Parameters)
+			foreach (string? @namespace in method.Parameters
+				         .Select(parameter => parameter.Type.Namespace)
+				         .Where(n => n is not null))
 			{
-				if (parameter.Type.Namespace != null)
-				{
-					yield return parameter.Type.Namespace;
-				}
+				yield return @namespace!;
 			}
 		}
 	}

@@ -7,6 +7,9 @@ using aweXpect.Mocks.Setup;
 
 namespace aweXpect.Mocks;
 
+/// <summary>
+///     A mock for type <typeparamref name="T" />.
+/// </summary>
 public abstract class Mock<T> : IMockSetup
 {
 	private readonly List<Invocation> _invocations = [];
@@ -18,9 +21,20 @@ public abstract class Mock<T> : IMockSetup
 	public abstract T Object { get; }
 
 	/// <summary>
-	/// Allows setting up the mock.
+	///     Allows setting up the mock.
 	/// </summary>
-	public MockSetup<T> Setup => new MockSetup<T>(this);
+	public MockSetup<T> Setup => new(this);
+
+	/// <inheritdoc cref="IMockSetup.RegisterSetup(MockSetup)" />
+	void IMockSetup.RegisterSetup(MockSetup mockSetup)
+	{
+		if (_invocations.Count > 0)
+		{
+			throw new NotSupportedException("You may not register additional setups after the first usage of the mock");
+		}
+
+		_setups.Add(mockSetup);
+	}
 
 	/// <summary>
 	///     Implicitly converts the mock to the mocked object instance.
@@ -34,17 +48,6 @@ public abstract class Mock<T> : IMockSetup
 		return mock.Object;
 	}
 
-	/// <inheritdoc cref="IMockSetup.RegisterSetup(MockSetup)"/>
-	void IMockSetup.RegisterSetup(MockSetup mockSetup)
-	{
-		if (_invocations.Count > 0)
-		{
-			throw new NotSupportedException("You may not register additional setups after the first usage of the mock");
-		}
-
-		_setups.Add(mockSetup);
-	}
-
 	private Invocation RegisterInvocation(string name, object[] parameters)
 	{
 		// TODO: Create and register invocation
@@ -53,6 +56,9 @@ public abstract class Mock<T> : IMockSetup
 		return invocation;
 	}
 
+	/// <summary>
+	///     Executes a method and gets the setup return value.
+	/// </summary>
 	protected TResult Execute<TResult>(string name, params object[] args)
 	{
 		Invocation invocation = RegisterInvocation(name, args);
@@ -67,6 +73,9 @@ public abstract class Mock<T> : IMockSetup
 		return matchingSetup.Invoke<TResult>(invocation);
 	}
 
+	/// <summary>
+	///     Executes a method returning <see langword="void" />.
+	/// </summary>
 	protected void Execute(string name, params object[] args)
 	{
 		Invocation invocation = RegisterInvocation(name, args);

@@ -9,7 +9,6 @@ internal static class GeneratorHelpers
 	internal static bool IsMockForInvocationExpressionSyntax(this SyntaxNode node)
 		=> node is InvocationExpressionSyntax
 		{
-			// TODO: Check Namespace
 			Expression: MemberAccessExpressionSyntax
 			{
 				Expression: IdentifierNameSyntax { Identifier.Text: "Mock", },
