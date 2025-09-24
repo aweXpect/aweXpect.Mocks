@@ -29,7 +29,8 @@ public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 
 	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) && methodInvocation.Parameters.Length == 0;
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 0;
 }
 
 /// <summary>
@@ -73,5 +74,6 @@ public class MethodWithoutReturnValueSetup<T>(string name, With.MatchParameter m
 
 	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) && methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }

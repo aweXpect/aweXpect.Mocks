@@ -60,7 +60,8 @@ public class MethodWithReturnValueSetup<TReturn>(string name) : MethodSetup
 
 	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) && methodInvocation.Parameters.Length == 0;
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 0;
 }
 
 /// <summary>
@@ -135,7 +136,8 @@ public class MethodWithReturnValueSetup<TReturn, T>(string name, With.MatchParam
 			throw new NotSupportedException("No return value is specified");
 		}
 
-		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1 && _returnCallback(p1) is TResult result)
+		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1 &&
+		    _returnCallback(p1) is TResult result)
 		{
 			return result;
 		}
@@ -145,5 +147,6 @@ public class MethodWithReturnValueSetup<TReturn, T>(string name, With.MatchParam
 
 	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
 	public override bool Matches(Invocation invocation)
-		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) && methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
+		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
+		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }

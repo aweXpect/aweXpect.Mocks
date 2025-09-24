@@ -1,7 +1,7 @@
 ﻿namespace aweXpect.Mocks.Setup;
 
 /// <summary>
-///     Sets up the <see cref="Mock{T}"/> <paramref name="mock"/>
+///     Sets up the <see cref="Mock{T}" /> <paramref name="mock" />
 /// </summary>
 public class MockSetup<T>(Mock<T> mock) : IMockSetup
 {

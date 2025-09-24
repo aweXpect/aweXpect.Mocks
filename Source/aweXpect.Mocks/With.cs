@@ -44,6 +44,7 @@ public static class With
 			{
 				return Matches(typedValue);
 			}
+
 			return value is null && Matches(default!);
 		}
 

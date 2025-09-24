@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using aweXpect.Mocks.Implementations;
-using aweXpect.Mocks.Setup;
-
-namespace aweXpect.Mocks.Tests.Dummy;
+﻿namespace aweXpect.Mocks.Tests.Dummy;
 
 public sealed class DummyTests
 {
@@ -12,15 +8,15 @@ public sealed class DummyTests
 		bool isCalled = false;
 		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
 		Mock<IUserService> mock2 = Mock.For<IUserService>();
-		var mock3 = Mock.For<MyUserRepository>();
-		mock3.Setup.RemoveUser("foo").Callback(() => isCalled = true).Returns(true);
+		Mock<MyUserRepository> mock3 = Mock.For<MyUserRepository>();
+		//mock3.Setup.RemoveUser("foo").Callback(() => isCalled = true).Returns(true);
+		//
+		//mock3.Setup.Values
+		//	.InitializeWith([1, 2,])
+		//	.OnGet(() => { isCalled = true; })
+		//	.OnSet(value => _ = value);
 
-		mock3.Setup.Values
-			.InitializeWith([1, 2])
-			.OnGet(() => { isCalled = true; })
-			.OnSet(value => _ = value);
-
-		var repository = mock3.Object;
+		MyUserRepository repository = mock3.Object;
 
 		repository.RemoveUser("bar");
 

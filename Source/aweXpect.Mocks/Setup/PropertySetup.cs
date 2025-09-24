@@ -35,12 +35,12 @@ public abstract class PropertySetup
 	}
 
 	/// <summary>
-	/// Invokes the setter logic with the given <paramref name="value"/>.
+	///     Invokes the setter logic with the given <paramref name="value" />.
 	/// </summary>
 	protected abstract void InvokeSetter(object? value);
 
 	/// <summary>
-	/// Invokes the getter logic and returns the value of type <typeparamref name="TResult"/>.
+	///     Invokes the getter logic and returns the value of type <typeparamref name="TResult" />.
 	/// </summary>
 	protected abstract TResult InvokeGetter<TResult>();
 
@@ -69,9 +69,9 @@ public abstract class PropertySetup
 /// </summary>
 public class PropertySetup<T> : PropertySetup
 {
-	private T _value = default!;
-	private Func<T, T, T>? _setterCallback;
 	private Func<T, T>? _getterCallback;
+	private Func<T, T, T>? _setterCallback;
+	private T _value = default!;
 
 	/// <inheritdoc cref="PropertySetup.InvokeSetter(object?)" />
 	protected override void InvokeSetter(object? value)
@@ -98,15 +98,17 @@ public class PropertySetup<T> : PropertySetup
 		{
 			value = _getterCallback(_value);
 		}
+
 		if (value is TResult typedValue)
 		{
 			return typedValue;
 		}
+
 		return default!;
 	}
 
 	/// <summary>
-	/// Initializes the property with the given <paramref name="value"/>.
+	///     Initializes the property with the given <paramref name="value" />.
 	/// </summary>
 	public PropertySetup<T> InitializeWith(T value)
 	{
@@ -115,10 +117,12 @@ public class PropertySetup<T> : PropertySetup
 	}
 
 	/// <summary>
-	/// Registers a callback to be invoked whenever the property's getter is accessed.
+	///     Registers a callback to be invoked whenever the property's getter is accessed.
 	/// </summary>
-	/// <remarks>Use this method to perform custom logic or side effects whenever the property's value is read. Only
-	/// one callback can be registered; subsequent calls to this method will replace any previously set callback.</remarks>
+	/// <remarks>
+	///     Use this method to perform custom logic or side effects whenever the property's value is read. Only
+	///     one callback can be registered; subsequent calls to this method will replace any previously set callback.
+	/// </remarks>
 	public PropertySetup<T> OnGet(Action callback)
 	{
 		_getterCallback = v =>
@@ -130,10 +134,13 @@ public class PropertySetup<T> : PropertySetup
 	}
 
 	/// <summary>
-	/// Registers a callback to be invoked whenever the property's value is set. The callback receives the new value being set.
+	///     Registers a callback to be invoked whenever the property's value is set. The callback receives the new value being
+	///     set.
 	/// </summary>
-	/// <remarks>Use this method to perform custom logic or side effects whenever the property's value changes. Only
-	/// one callback can be registered; subsequent calls to this method will replace any previously set callback.</remarks>
+	/// <remarks>
+	///     Use this method to perform custom logic or side effects whenever the property's value changes. Only
+	///     one callback can be registered; subsequent calls to this method will replace any previously set callback.
+	/// </remarks>
 	public PropertySetup<T> OnSet(Action<T> callback)
 	{
 		_setterCallback = (_, newValue) =>

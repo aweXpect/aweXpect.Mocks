@@ -11,7 +11,7 @@ public class PropertySetterInvocation(string propertyName, object? value) : Invo
 	public string Name { get; } = propertyName;
 
 	/// <summary>
-	/// The value the property was being set to.
+	///     The value the property was being set to.
 	/// </summary>
 	public object? Value { get; } = value;
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using aweXpect.Mocks.Invocations;
 using aweXpect.Mocks.Setup;
 
@@ -12,14 +11,14 @@ namespace aweXpect.Mocks;
 /// </summary>
 public abstract class Mock<T> : IMockSetup
 {
+	private readonly List<Invocation> _invocations = [];
+	private readonly Dictionary<string, PropertySetup> _propertySetups = [];
+	private readonly List<MethodSetup> _setups = [];
+
 	/// <summary>
-	/// The registered invocations of the mock.
+	///     The registered invocations of the mock.
 	/// </summary>
 	public IReadOnlyList<Invocation> Invocations => _invocations.AsReadOnly();
-
-	private readonly List<Invocation> _invocations = [];
-	private readonly List<MethodSetup> _setups = [];
-	private readonly Dictionary<string, PropertySetup> _propertySetups = [];
 
 	/// <summary>
 	///     Exposes the mocked object instance.
@@ -51,24 +50,6 @@ public abstract class Mock<T> : IMockSetup
 		}
 
 		_propertySetups.Add(propertyName, propertySetup);
-	}
-
-	/// <summary>
-	///     Implicitly converts the mock to the mocked object instance.
-	/// </summary>
-	/// <remarks>
-	///     This does not work implicitly (but only with an explicit cast) for interfaces due to
-	///     a limitation of the C# language.
-	/// </remarks>
-	public static implicit operator T(Mock<T> mock)
-	{
-		return mock.Object;
-	}
-
-	private Invocation RegisterInvocation(Invocation invocation)
-	{
-		_invocations.Add(invocation);
-		return invocation;
 	}
 
 	/// <summary>
@@ -106,11 +87,12 @@ public abstract class Mock<T> : IMockSetup
 	{
 		Invocation invocation = RegisterInvocation(new PropertySetterInvocation(propertyName, value));
 
-		if (!_propertySetups.TryGetValue(propertyName, out var matchingSetup))
+		if (!_propertySetups.TryGetValue(propertyName, out PropertySetup? matchingSetup))
 		{
 			matchingSetup = new PropertySetup.Default();
 			_propertySetups.Add(propertyName, matchingSetup);
 		}
+
 		matchingSetup.InvokeSetter(invocation, value);
 	}
 
@@ -121,11 +103,30 @@ public abstract class Mock<T> : IMockSetup
 	{
 		Invocation invocation = RegisterInvocation(new PropertyGetterInvocation(propertyName));
 
-		if (!_propertySetups.TryGetValue(propertyName, out var matchingSetup))
+		if (!_propertySetups.TryGetValue(propertyName, out PropertySetup? matchingSetup))
 		{
 			matchingSetup = new PropertySetup.Default();
 			_propertySetups.Add(propertyName, matchingSetup);
 		}
+
 		return matchingSetup.InvokeGetter<TResult>(invocation);
+	}
+
+	/// <summary>
+	///     Implicitly converts the mock to the mocked object instance.
+	/// </summary>
+	/// <remarks>
+	///     This does not work implicitly (but only with an explicit cast) for interfaces due to
+	///     a limitation of the C# language.
+	/// </remarks>
+	public static implicit operator T(Mock<T> mock)
+	{
+		return mock.Object;
+	}
+
+	private Invocation RegisterInvocation(Invocation invocation)
+	{
+		_invocations.Add(invocation);
+		return invocation;
 	}
 }
