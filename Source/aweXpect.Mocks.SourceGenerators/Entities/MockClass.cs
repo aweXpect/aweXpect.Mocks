@@ -5,17 +5,18 @@ namespace aweXpect.Mocks.SourceGenerators.Entities;
 
 internal record MockClass
 {
-	private string[]? _namespaces;
-
 	public MockClass(ITypeSymbol[] types)
 	{
 		Namespace = types[0].ContainingNamespace.ToString();
 		ClassName = types[0].Name;
 
+		IsInterface = types[0].TypeKind == TypeKind.Interface;
 		FileName = $"MockFor{ClassName}.g.cs";
 		Methods = new EquatableArray<Method>(
-			types[0].GetMembers().OfType<IMethodSymbol>().Select(x => new Method(x)).ToArray());
+			types[0].GetMembers().OfType<IMethodSymbol>().Where(x => IsInterface || x.IsVirtual).Select(x => new Method(x)).ToArray());
 	}
+
+	public bool IsInterface { get; }
 
 	public EquatableArray<Method> Methods { get; }
 	public string FileName { get; }
@@ -23,11 +24,7 @@ internal record MockClass
 	public string ClassName { get; }
 
 
-	public string[] GetNamespaces()
-	{
-		_namespaces ??= EnumerateNamespaces().Distinct().OrderBy(n => n).ToArray();
-		return _namespaces;
-	}
+	public string[] GetNamespaces() => EnumerateNamespaces().Distinct().OrderBy(n => n).ToArray();
 
 	private IEnumerable<string> EnumerateNamespaces()
 	{

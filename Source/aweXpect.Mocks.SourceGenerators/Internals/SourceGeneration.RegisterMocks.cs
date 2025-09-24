@@ -46,7 +46,7 @@ internal static partial class SourceGeneration
 			result += $$"""
 			            if (typeof(T) == typeof({{mock.ClassName}}))
 			            			{
-			            				_value = new MockFor{{mock.ClassName}}() as Mock<T>;
+			            				_value = new For{{mock.ClassName}}.Mock() as Mock<T>;
 			            			}
 
 			            """;
