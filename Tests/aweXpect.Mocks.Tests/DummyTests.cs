@@ -1,31 +1,21 @@
-﻿namespace aweXpect.Mocks.Tests;
+﻿using aweXpect.Mocks.Implementations;
+
+namespace aweXpect.Mocks.Tests;
 
 public sealed class DummyTests
 {
 	[Fact]
-	public async Task WhenPathIsAbsolute_ShouldSucceed()
+	public async Task XXX()
 	{
-		string path = "/foo";
+		bool isCalled = false;
+		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
+		Mock<IUserService> mock2 = Mock.For<IUserService>();
+		mock2.Setup.SaveChanges().Callback(() => isCalled = true);
 
-		async Task Act()
-			=> await That(path).IsAbsolutePath();
+		IUserService repository = mock2.Object;
 
-		await That(Act).DoesNotThrow();
-	}
+		repository.SaveChanges();
 
-	[Fact]
-	public async Task WhenPathIsRelative_ShouldFail()
-	{
-		string path = "foo";
-
-		async Task Act()
-			=> await That(path).IsAbsolutePath();
-
-		await That(Act).ThrowsException()
-			.WithMessage("""
-			             Expected that path
-			             is an absolute path,
-			             but it was "foo"
-			             """);
+		await That(isCalled).IsTrue();
 	}
 }

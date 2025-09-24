@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<RootNamespace>aweXpect</RootNamespace>
+		<Description>Mocking Framework for aweXpect.</Description>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="aweXpect.Core"/>
+		<None
+			Include="$(MSBuildProjectDirectory)\..\aweXpect.Mocks.SourceGenerators\bin\$(Configuration)\netstandard2.0\aweXpect.Mocks.SourceGenerators.dll"
+			Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
 	</ItemGroup>
 
 </Project>
