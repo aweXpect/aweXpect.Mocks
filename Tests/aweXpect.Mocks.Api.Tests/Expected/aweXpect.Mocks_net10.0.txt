@@ -100,7 +100,7 @@ namespace aweXpect.Mocks.Setup
     {
         protected MethodSetup() { }
         protected abstract void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation);
-        protected abstract TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation);
+        protected abstract TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation, aweXpect.Mocks.MockBehavior behavior);
         protected abstract bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation);
     }
     public class MethodWithReturnValueSetup<TReturn> : aweXpect.Mocks.Setup.MethodSetup
@@ -108,7 +108,7 @@ namespace aweXpect.Mocks.Setup
         public MethodWithReturnValueSetup(string name) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn> Callback(System.Action callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation) { }
-        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation, aweXpect.Mocks.MockBehavior behavior) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn> Returns(System.Func<TReturn> callback) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn> Returns(TReturn returnValue) { }
@@ -119,7 +119,7 @@ namespace aweXpect.Mocks.Setup
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn, T> Callback(System.Action callback) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn, T> Callback(System.Action<T> callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation) { }
-        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation, aweXpect.Mocks.MockBehavior behavior) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn, T> Returns(System.Func<TReturn> callback) { }
         public aweXpect.Mocks.Setup.MethodWithReturnValueSetup<TReturn, T> Returns(System.Func<T, TReturn> callback) { }
@@ -130,7 +130,7 @@ namespace aweXpect.Mocks.Setup
         public MethodWithoutReturnValueSetup(string name) { }
         public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup Callback(System.Action callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation) { }
-        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation, aweXpect.Mocks.MockBehavior behavior) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
     }
     public class MethodWithoutReturnValueSetup<T1> : aweXpect.Mocks.Setup.MethodSetup
@@ -139,7 +139,7 @@ namespace aweXpect.Mocks.Setup
         public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T1> Callback(System.Action callback) { }
         public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T1> Callback(System.Action<T1> callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation) { }
-        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
+        protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation, aweXpect.Mocks.MockBehavior behavior) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
     }
     public class MockSetup<T> : aweXpect.Mocks.Setup.IMockSetup
