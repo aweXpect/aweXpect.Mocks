@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using System.Text;
+﻿using System.Text;
 using aweXpect.Mocks.SourceGenerators.Entities;
 using Type = aweXpect.Mocks.SourceGenerators.Entities.Type;
 
