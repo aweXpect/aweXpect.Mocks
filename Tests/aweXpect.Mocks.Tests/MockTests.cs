@@ -15,7 +15,7 @@ public class MockTests
 
 		sut.Execute("my-method");
 
-		await That(setup.InvocationCount).IsEqualTo(1);
+		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(1);
 	}
 
 	[Fact]
@@ -30,7 +30,7 @@ public class MockTests
 
 		int value = sut.Execute<int>("my-method");
 
-		await That(setup.InvocationCount).IsEqualTo(1);
+		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(1);
 		await That(value).IsEqualTo(42);
 	}
 
@@ -83,7 +83,7 @@ public class MockTests
 
 		await That(Act).Throws<NotSupportedException>()
 			.WithMessage("You may not register additional setups after the first usage of the mock");
-		await That(setup.InvocationCount).IsEqualTo(0);
+		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(0);
 	}
 
 	[Fact]

@@ -27,8 +27,8 @@ public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
-	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
-	public override bool Matches(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.IsMatch(Invocation)" />
+	protected override bool IsMatch(Invocation invocation)
 		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
 		   methodInvocation.Parameters.Length == 0;
 }
@@ -36,7 +36,7 @@ public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 /// <summary>
 ///     Setup for a method with one parameter <typeparamref name="T" /> returning <see langword="void" />.
 /// </summary>
-public class MethodWithoutReturnValueSetup<T>(string name, With.MatchParameter match) : MethodSetup
+public class MethodWithoutReturnValueSetup<T>(string name, With.Parameter match) : MethodSetup
 {
 	private Action<T>? _callback;
 
@@ -72,8 +72,8 @@ public class MethodWithoutReturnValueSetup<T>(string name, With.MatchParameter m
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
-	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
-	public override bool Matches(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.IsMatch(Invocation)" />
+	protected override bool IsMatch(Invocation invocation)
 		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
 		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }

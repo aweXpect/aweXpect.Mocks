@@ -6,14 +6,12 @@ namespace aweXpect.Mocks.Setup;
 /// <summary>
 ///     Base class for method setups.
 /// </summary>
-public abstract class MethodSetup
+public abstract class MethodSetup : IMethodSetup
 {
 	private int _invocationCount;
 
-	/// <summary>
-	///     The number of matching invocations on the mock.
-	/// </summary>
-	public int InvocationCount => _invocationCount;
+	/// <inheritdoc cref="IMethodSetup.InvocationCount" />
+	int IMethodSetup.InvocationCount => _invocationCount;
 
 	internal TResult Invoke<TResult>(Invocation invocation)
 	{
@@ -38,8 +36,12 @@ public abstract class MethodSetup
 	/// </summary>
 	protected abstract TResult GetReturnValue<TResult>(Invocation invocation);
 
+	/// <inheritdoc cref="IMethodSetup.Matches(Invocation)" />
+	bool IMethodSetup.Matches(Invocation invocation)
+		=> IsMatch(invocation);
+
 	/// <summary>
 	///     Checks if the <paramref name="invocation" /> matches the setup.
 	/// </summary>
-	public abstract bool Matches(Invocation invocation);
+	protected abstract bool IsMatch(Invocation invocation);
 }

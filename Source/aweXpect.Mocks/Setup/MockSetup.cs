@@ -18,18 +18,18 @@ public class MockSetup<T>(Mock<T> mock) : IMockSetup
 		=> ((IMockSetup)mock).RegisterProperty(propertyName, propertySetup);
 
 	/// <inheritdoc cref="IMockSetup.Execute{TResult}(string, object[])" />
-	public TResult Execute<TResult>(string methodName, params object?[] parameters)
+	TResult IMockSetup.Execute<TResult>(string methodName, params object?[] parameters)
 		=> ((IMockSetup)mock).Execute<TResult>(methodName, parameters);
 
 	/// <inheritdoc cref="IMockSetup.Execute(string, object[])" />
-	public void Execute(string methodName, params object?[] parameters)
+	void IMockSetup.Execute(string methodName, params object?[] parameters)
 		=> ((IMockSetup)mock).Execute(methodName, parameters);
 
 	/// <inheritdoc cref="IMockSetup.Get{TResult}(string)" />
-	public TResult Get<TResult>(string propertyName)
+	TResult IMockSetup.Get<TResult>(string propertyName)
 		=> ((IMockSetup)mock).Get<TResult>(propertyName);
 
 	/// <inheritdoc cref="IMockSetup.Set(string, object?)" />
-	public void Set(string propertyName, object? value)
+	void IMockSetup.Set(string propertyName, object? value)
 		=> ((IMockSetup)mock).Set(propertyName, value);
 }

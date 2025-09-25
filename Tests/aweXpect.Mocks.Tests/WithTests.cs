@@ -9,7 +9,7 @@ public sealed class WithTests
 	[InlineData("fo", false)]
 	public async Task ImplicitConversion_ShouldCheckForEquality(string? value, bool expectMatch)
 	{
-		With.MatchParameter<string> sut = "foo";
+		With.Parameter<string> sut = "foo";
 
 		bool result = sut.Matches(value);
 
@@ -22,7 +22,7 @@ public sealed class WithTests
 	[InlineData("foo")]
 	public async Task WithAny_ShouldAlwaysMatch(string? value)
 	{
-		With.MatchParameter<string> sut = With.Any<string>();
+		With.Parameter<string> sut = With.Any<string>();
 
 		bool result = sut.Matches(value);
 
@@ -34,7 +34,7 @@ public sealed class WithTests
 	[InlineData(1, false)]
 	public async Task WithMatching_CheckForNull_ShouldReturnExpectedResult(int? value, bool expectedResult)
 	{
-		With.MatchParameter<int?> sut = With<int?>.Matching(v => v is null);
+		With.Parameter<int?> sut = With<int?>.Matching(v => v is null);
 
 		bool result = sut.Matches(value);
 
@@ -46,7 +46,7 @@ public sealed class WithTests
 	[InlineData("foo")]
 	public async Task WithMatching_DifferentType_ShouldReturnFalse(object? value)
 	{
-		With.MatchParameter<int?> sut = With<int?>.Matching(_ => true);
+		With.Parameter<int?> sut = With<int?>.Matching(_ => true);
 
 		bool result = sut.Matches(value);
 
@@ -58,7 +58,7 @@ public sealed class WithTests
 	[InlineData(false)]
 	public async Task WithMatching_ShouldReturnPredicateValue(bool predicateValue)
 	{
-		With.MatchParameter<string> sut = With<string>.Matching(_ => predicateValue);
+		With.Parameter<string> sut = With<string>.Matching(_ => predicateValue);
 
 		bool result = sut.Matches("foo");
 
