@@ -23,12 +23,12 @@ public abstract class Mock<T> : IMockSetup
 	private readonly List<Invocation> _invocations = [];
 	private readonly Dictionary<string, PropertySetup> _propertySetups = [];
 	private readonly List<MethodSetup> _setups = [];
+	private readonly MockBehavior _behavior;
 
 	/// <summary>
 	/// Gets the behavior settings used by this mock instance.
 	/// </summary>
 	MockBehavior IMockSetup.Behavior => _behavior;
-	private readonly MockBehavior _behavior;
 
 	/// <summary>
 	///     The registered invocations of the mock.
@@ -45,7 +45,7 @@ public abstract class Mock<T> : IMockSetup
 	/// </summary>
 	public MockSetup<T> Setup => new(this);
 
-	/// <inheritdoc cref="IMockSetup.RegisterMethod" />
+	/// <inheritdoc cref="IMockSetup.RegisterMethod(MethodSetup)" />
 	void IMockSetup.RegisterMethod(MethodSetup methodSetup)
 	{
 		if (_invocations.Count > 0)
@@ -56,7 +56,7 @@ public abstract class Mock<T> : IMockSetup
 		_setups.Add(methodSetup);
 	}
 
-	/// <inheritdoc cref="IMockSetup.RegisterProperty" />
+	/// <inheritdoc cref="IMockSetup.RegisterProperty(string, PropertySetup)" />
 	void IMockSetup.RegisterProperty(string propertyName, PropertySetup propertySetup)
 	{
 		if (_invocations.Count > 0)
@@ -67,9 +67,7 @@ public abstract class Mock<T> : IMockSetup
 		_propertySetups.Add(propertyName, propertySetup);
 	}
 
-	/// <summary>
-	///     Executes a method and gets the setup return value.
-	/// </summary>
+	/// <inheritdoc cref="IMockSetup.Execute{TResult}(string, object?[])" />
 	TResult IMockSetup.Execute<TResult>(string methodName, params object?[] parameters)
 	{
 		Invocation invocation = RegisterInvocation(new MethodInvocation(methodName, parameters));
@@ -85,12 +83,10 @@ public abstract class Mock<T> : IMockSetup
 			return _behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
-		return matchingSetup.Invoke<TResult>(invocation);
+		return matchingSetup.Invoke<TResult>(invocation, _behavior);
 	}
 
-	/// <summary>
-	///     Executes a method returning <see langword="void" />.
-	/// </summary>
+	/// <inheritdoc cref="IMockSetup.Execute(string, object?[])" />
 	void IMockSetup.Execute(string methodName, params object?[] parameters)
 	{
 		Invocation invocation = RegisterInvocation(new MethodInvocation(methodName, parameters));
@@ -99,9 +95,7 @@ public abstract class Mock<T> : IMockSetup
 		matchingSetup?.Invoke(invocation);
 	}
 
-	/// <summary>
-	///     Executes a method returning <see langword="void" />.
-	/// </summary>
+	/// <inheritdoc cref="IMockSetup.Set(string, object?)" />
 	void IMockSetup.Set(string propertyName, object? value)
 	{
 		Invocation invocation = RegisterInvocation(new PropertySetterInvocation(propertyName, value));
@@ -115,9 +109,7 @@ public abstract class Mock<T> : IMockSetup
 		matchingSetup.InvokeSetter(invocation, value);
 	}
 
-	/// <summary>
-	///     Executes a method and gets the setup return value.
-	/// </summary>
+	/// <inheritdoc cref="IMockSetup.Get{TResult}(string)" />
 	TResult IMockSetup.Get<TResult>(string propertyName)
 	{
 		Invocation invocation = RegisterInvocation(new PropertyGetterInvocation(propertyName));

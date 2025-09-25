@@ -1,5 +1,6 @@
 ﻿using aweXpect.Mocks.Invocations;
 using aweXpect.Mocks.Setup;
+using aweXpect.Mocks.Tests.TestHelpers;
 
 namespace aweXpect.Mocks.Tests;
 
@@ -164,10 +165,5 @@ public class MockTests
 		string value = sut;
 
 		await That(value).IsEqualTo("foo");
-	}
-
-	private class MyMock<T>(T @object) : Mock<T>(MockBehavior.Default)
-	{
-		public override T Object => @object;
 	}
 }

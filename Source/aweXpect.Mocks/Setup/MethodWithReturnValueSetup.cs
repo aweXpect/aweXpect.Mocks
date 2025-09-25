@@ -41,13 +41,13 @@ public class MethodWithReturnValueSetup<TReturn>(string name) : MethodSetup
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation) => _callback?.Invoke();
 
-	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
-	protected override TResult GetReturnValue<TResult>(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation, MockBehavior)" />
+	protected override TResult GetReturnValue<TResult>(Invocation invocation, MockBehavior behavior)
 		where TResult : default
 	{
 		if (_returnCallback is null)
 		{
-			throw new NotSupportedException("No return value is specified");
+			return behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
 		if (_returnCallback() is TResult result)
@@ -127,13 +127,13 @@ public class MethodWithReturnValueSetup<TReturn, T>(string name, With.Parameter 
 		}
 	}
 
-	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
-	protected override TResult GetReturnValue<TResult>(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation, MockBehavior)" />
+	protected override TResult GetReturnValue<TResult>(Invocation invocation, MockBehavior behavior)
 		where TResult : default
 	{
 		if (_returnCallback is null)
 		{
-			throw new NotSupportedException("No return value is specified");
+			return behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
 		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1 &&

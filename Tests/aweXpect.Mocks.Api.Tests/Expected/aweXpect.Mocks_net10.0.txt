@@ -133,11 +133,11 @@ namespace aweXpect.Mocks.Setup
         protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
     }
-    public class MethodWithoutReturnValueSetup<T> : aweXpect.Mocks.Setup.MethodSetup
+    public class MethodWithoutReturnValueSetup<T1> : aweXpect.Mocks.Setup.MethodSetup
     {
         public MethodWithoutReturnValueSetup(string name, aweXpect.Mocks.With.Parameter match) { }
-        public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T> Callback(System.Action callback) { }
-        public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T> Callback(System.Action<T> callback) { }
+        public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T1> Callback(System.Action callback) { }
+        public aweXpect.Mocks.Setup.MethodWithoutReturnValueSetup<T1> Callback(System.Action<T1> callback) { }
         protected override void ExecuteCallback(aweXpect.Mocks.Invocations.Invocation invocation) { }
         protected override TResult GetReturnValue<TResult>(aweXpect.Mocks.Invocations.Invocation invocation) { }
         protected override bool IsMatch(aweXpect.Mocks.Invocations.Invocation invocation) { }
