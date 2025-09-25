@@ -6,6 +6,11 @@ namespace aweXpect.Mocks.Setup;
 public interface IMockSetup
 {
 	/// <summary>
+	/// Gets the behavior settings used by this mock instance.
+	/// </summary>
+	MockBehavior Behavior { get; }
+
+	/// <summary>
 	///     Registers the <paramref name="methodSetup" /> in the mock.
 	/// </summary>
 	void RegisterMethod(MethodSetup methodSetup);

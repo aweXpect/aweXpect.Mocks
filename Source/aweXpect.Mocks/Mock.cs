@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using aweXpect.Mocks.Exceptions;
 using aweXpect.Mocks.Invocations;
 using aweXpect.Mocks.Setup;
+using aweXpect.Formatting;
+using static aweXpect.Formatting.Format;
 
 namespace aweXpect.Mocks;
 
@@ -11,9 +14,20 @@ namespace aweXpect.Mocks;
 /// </summary>
 public abstract class Mock<T> : IMockSetup
 {
+	/// <inheritdoc cref="Mock{T}" />
+	protected Mock(MockBehavior mockBehavior)
+	{
+		Behavior = mockBehavior;
+	}
+
 	private readonly List<Invocation> _invocations = [];
 	private readonly Dictionary<string, PropertySetup> _propertySetups = [];
 	private readonly List<MethodSetup> _setups = [];
+
+	/// <summary>
+	/// Gets the behavior settings used by this mock instance.
+	/// </summary>
+	public MockBehavior Behavior { get; }
 
 	/// <summary>
 	///     The registered invocations of the mock.
@@ -62,8 +76,12 @@ public abstract class Mock<T> : IMockSetup
 		MethodSetup? matchingSetup = _setups.FirstOrDefault(setup => setup.Matches(invocation));
 		if (matchingSetup is null)
 		{
-			//TODO: Throw exception? maybe depending on a behavior setting?
-			return default!;
+			if (Behavior.ThrowWhenNotSetup)
+			{
+				throw new MockNotSetupException($"The method '{methodName}({string.Join(",", parameters.Select(x => Formatter.Format(x?.GetType())))})' was invoked without prior setup.");
+			}
+
+			return Behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
 		return matchingSetup.Invoke<TResult>(invocation);

@@ -1,5 +1,18 @@
 [assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/aweXpect/aweXpect.Mocks.git")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v10.0", FrameworkDisplayName=".NET 10.0")]
+namespace aweXpect.Mocks.Exceptions
+{
+    public abstract class MockException : System.Exception
+    {
+        protected MockException(string message) { }
+        protected MockException(string message, System.Exception innerException) { }
+    }
+    public class MockNotSetupException : aweXpect.Mocks.Exceptions.MockException
+    {
+        public MockNotSetupException(string message) { }
+        public MockNotSetupException(string message, System.Exception innerException) { }
+    }
+}
 namespace aweXpect.Mocks.Invocations
 {
     public class Invocation
@@ -26,9 +39,21 @@ namespace aweXpect.Mocks.Invocations
 }
 namespace aweXpect.Mocks
 {
+    public class MockBehavior : System.IEquatable<aweXpect.Mocks.MockBehavior>
+    {
+        public MockBehavior() { }
+        public aweXpect.Mocks.MockBehavior.IDefaultValueGenerator DefaultValueGenerator { get; init; }
+        public bool ThrowWhenNotSetup { get; init; }
+        public static aweXpect.Mocks.MockBehavior Default { get; }
+        public interface IDefaultValueGenerator
+        {
+            T Generate<T>();
+        }
+    }
     public abstract class Mock<T> : aweXpect.Mocks.Setup.IMockSetup
     {
-        protected Mock() { }
+        protected Mock(aweXpect.Mocks.MockBehavior mockBehavior) { }
+        public aweXpect.Mocks.MockBehavior Behavior { get; }
         public System.Collections.Generic.IReadOnlyList<aweXpect.Mocks.Invocations.Invocation> Invocations { get; }
         public abstract T Object { get; }
         public aweXpect.Mocks.Setup.MockSetup<T> Setup { get; }
@@ -59,6 +84,7 @@ namespace aweXpect.Mocks.Setup
 {
     public interface IMockSetup
     {
+        aweXpect.Mocks.MockBehavior Behavior { get; }
         void Execute(string methodName, params object?[] parameters);
         TResult Execute<TResult>(string methodName, params object?[] parameters);
         TResult Get<TResult>(string propertyName);

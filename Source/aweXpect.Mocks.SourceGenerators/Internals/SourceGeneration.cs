@@ -16,17 +16,24 @@ internal static partial class SourceGeneration
 			public static Mock<T> For<T>()
 			{
 				var generator = new MockGenerator();
-				return generator.Get<T>()
+				return generator.Get<T>(MockBehavior.Default)
+					?? throw new NotSupportedException("Could not generate Mock<T>");
+			}
+			
+			public static Mock<T> For<T>(MockBehavior mockBehavior)
+			{
+				var generator = new MockGenerator();
+				return generator.Get<T>(mockBehavior)
 					?? throw new NotSupportedException("Could not generate Mock<T>");
 			}
 			
 			private partial class MockGenerator
 			{
 				private object? _value;
-				partial void Generate<T>();
-				public Mock<T>? Get<T>()
+				partial void Generate<T>(MockBehavior mockBehavior);
+				public Mock<T>? Get<T>(MockBehavior mockBehavior)
 				{
-					Generate<T>();
+					Generate<T>(mockBehavior);
 					return _value as Mock<T>;
 				}
 			}

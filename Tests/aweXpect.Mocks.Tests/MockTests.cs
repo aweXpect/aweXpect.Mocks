@@ -54,6 +54,7 @@ public class MockTests
 	{
 		MyMock<string> sut = new("foo");
 		IMockSetup mockSetup = sut;
+		mockSetup.RegisterMethod(new MethodWithReturnValueSetup<int>("my-method").Returns(0));
 
 		int value = mockSetup.Execute<int>("my-method");
 		mockSetup.Get<int>("my-get-property");
@@ -165,7 +166,7 @@ public class MockTests
 		await That(value).IsEqualTo("foo");
 	}
 
-	private class MyMock<T>(T @object) : Mock<T>
+	private class MyMock<T>(T @object) : Mock<T>(MockBehavior.Default)
 	{
 		public override T Object => @object;
 	}

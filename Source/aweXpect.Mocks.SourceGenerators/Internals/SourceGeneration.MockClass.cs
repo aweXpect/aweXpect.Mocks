@@ -106,7 +106,7 @@ internal static partial class SourceGeneration
 		sb.AppendLine("\t}");
 		sb.Append("\tpublic class Mock : Mock<").Append(mockClass.ClassName).AppendLine(">");
 		sb.AppendLine("\t{");
-		sb.AppendLine("\t\tpublic Mock()");
+		sb.AppendLine("\t\tpublic Mock(MockBehavior mockBehavior) : base(mockBehavior)");
 		sb.AppendLine("\t\t{");
 		sb.AppendLine("\t\t\tObject = new MockObject(this);");
 		sb.AppendLine("\t\t}");
