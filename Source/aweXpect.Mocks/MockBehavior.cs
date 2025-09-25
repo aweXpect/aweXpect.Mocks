@@ -37,9 +37,9 @@ public record MockBehavior
 		T Generate<T>();
 	}
 
-	private class ReturnDefaultDefaultValueGenerator : IDefaultValueGenerator
+	private sealed class ReturnDefaultDefaultValueGenerator : IDefaultValueGenerator
 	{
-		private static (Type Type, object Value)[] _defaultValues =
+		private static readonly (Type Type, object Value)[] _defaultValues =
 			[
 				(typeof(Task), Task.CompletedTask),
 				(typeof(CancellationToken), CancellationToken.None),
