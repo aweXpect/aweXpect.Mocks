@@ -28,7 +28,7 @@ public abstract class Mock<T> : IMockSetup
 	/// Gets the behavior settings used by this mock instance.
 	/// </summary>
 	MockBehavior IMockSetup.Behavior => _behavior;
-	private MockBehavior _behavior;
+	private readonly MockBehavior _behavior;
 
 	/// <summary>
 	///     The registered invocations of the mock.
