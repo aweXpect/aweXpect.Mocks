@@ -10,21 +10,28 @@ namespace aweXpect.Mocks;
 public record MockBehavior
 {
 	/// <summary>
-	/// Specifies whether an exception is thrown when an operation is attempted without prior setup.
+	///     The default mock behavior settings.
 	/// </summary>
-	public bool ThrowWhenNotSetup { get; init; } = true;
+	public static MockBehavior Default => _globalDefault;
 
 	/// <summary>
-	/// Specifies the strategy used to determine how default values that are not prior setup are generated.
+	/// Specifies whether an exception is thrown when an operation is attempted without prior setup.
 	/// </summary>
+	/// <remarks>If set to <see langword="false"/>, the value from the <see cref="DefaultValueGenerator"/> is used for return values of methods or properties.</remarks>
+	public bool ThrowWhenNotSetup { get; init; }
+
+	/// <summary>
+	/// The generator for default values when not specified by a setup.
+	/// </summary>
+	/// <remarks>
+	/// If <see cref="ThrowWhenNotSetup"/> is not set to <see langword="false" />, an exception is thrown in such cases.<para/>
+	/// The default implementation has a fixed set of objects with a not-<see langword="null" /> value:<br />
+	/// - <see cref="Task"/><br />
+	/// - <see cref="CancellationToken"/>
+	/// </remarks>
 	public IDefaultValueGenerator DefaultValueGenerator { get; init; } = new ReturnDefaultDefaultValueGenerator();
 
 	private static MockBehavior _globalDefault = new MockBehavior();
-
-	/// <summary>
-	///     The globally used default behavior settings.
-	/// </summary>
-	public static MockBehavior Default => _globalDefault;
 
 	/// <summary>
 	/// Defines a mechanism for generating default values of a specified type.

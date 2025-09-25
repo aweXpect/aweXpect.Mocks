@@ -22,8 +22,8 @@ public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation) => _callback?.Invoke();
 
-	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
-	protected override TResult GetReturnValue<TResult>(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation, MockBehavior)" />
+	protected override TResult GetReturnValue<TResult>(Invocation invocation, MockBehavior behavior)
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
@@ -34,16 +34,16 @@ public class MethodWithoutReturnValueSetup(string name) : MethodSetup
 }
 
 /// <summary>
-///     Setup for a method with one parameter <typeparamref name="T" /> returning <see langword="void" />.
+///     Setup for a method with one parameter <typeparamref name="T1" /> returning <see langword="void" />.
 /// </summary>
-public class MethodWithoutReturnValueSetup<T>(string name, With.Parameter match) : MethodSetup
+public class MethodWithoutReturnValueSetup<T1>(string name, With.Parameter match) : MethodSetup
 {
-	private Action<T>? _callback;
+	private Action<T1>? _callback;
 
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public MethodWithoutReturnValueSetup<T> Callback(Action callback)
+	public MethodWithoutReturnValueSetup<T1> Callback(Action callback)
 	{
 		_callback = _ => callback();
 		return this;
@@ -52,7 +52,7 @@ public class MethodWithoutReturnValueSetup<T>(string name, With.Parameter match)
 	/// <summary>
 	///     Registers a <paramref name="callback" /> to execute when the method is called.
 	/// </summary>
-	public MethodWithoutReturnValueSetup<T> Callback(Action<T> callback)
+	public MethodWithoutReturnValueSetup<T1> Callback(Action<T1> callback)
 	{
 		_callback = callback;
 		return this;
@@ -61,14 +61,14 @@ public class MethodWithoutReturnValueSetup<T>(string name, With.Parameter match)
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T p1)
+		if (invocation is MethodInvocation methodInvocation && methodInvocation.Parameters[0] is T1 p1)
 		{
 			_callback?.Invoke(p1);
 		}
 	}
 
-	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation)" />
-	protected override TResult GetReturnValue<TResult>(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.GetReturnValue{TResult}(Invocation, MockBehavior)" />
+	protected override TResult GetReturnValue<TResult>(Invocation invocation, MockBehavior behavior)
 		where TResult : default
 		=> throw new NotSupportedException("The setup does not support return values");
 
