@@ -10,9 +10,9 @@ public static class With
 	/// <summary>
 	///     Matches any parameter of type <typeparamref name="T" />.
 	/// </summary>
-	public static MatchParameter<T> Any<T>() => new MatchParameterType<T>();
+	public static Parameter<T> Any<T>() => new AnyParameter<T>();
 
-	private sealed class MatchParameterType<T> : MatchParameter<T>
+	private sealed class AnyParameter<T> : Parameter<T>
 	{
 		protected override bool Matches(T value) => true;
 	}
@@ -20,7 +20,7 @@ public static class With
 	/// <summary>
 	///     Matches a method parameter against an expectation.
 	/// </summary>
-	public abstract class MatchParameter
+	public abstract class Parameter
 	{
 		/// <summary>
 		///     <see langword="true" />, if the <paramref name="value" /> matches the expectation;
@@ -32,7 +32,7 @@ public static class With
 	/// <summary>
 	///     Matches a method parameter against an expectation.
 	/// </summary>
-	public abstract class MatchParameter<T> : MatchParameter
+	public abstract class Parameter<T> : Parameter
 	{
 		/// <summary>
 		///     <see langword="true" />, if the <paramref name="value" /> is of type <typeparamref name="T" /> and
@@ -54,14 +54,14 @@ public static class With
 		protected abstract bool Matches(T value);
 
 		/// <summary>
-		///     Implicitly converts to a <see cref="MatchParameter{T}" /> the compares the <paramref name="value" /> for equality.
+		///     Implicitly converts to a <see cref="Parameter{T}" /> the compares the <paramref name="value" /> for equality.
 		/// </summary>
-		public static implicit operator MatchParameter<T>(T value)
+		public static implicit operator Parameter<T>(T value)
 		{
 			return new MatchParameterIsEqual(value);
 		}
 
-		private sealed class MatchParameterIsEqual : MatchParameter<T>
+		private sealed class MatchParameterIsEqual : Parameter<T>
 		{
 			private readonly T _value;
 
@@ -84,10 +84,10 @@ public static class With<T>
 	///     Matches parameters of type <typeparamref name="T" />, if the <paramref name="predicate" /> returns
 	///     <see langword="true" />
 	/// </summary>
-	public static With.MatchParameter<T> Matching(Func<T, bool> predicate)
-		=> new MatchParameterPredicate(predicate);
+	public static With.Parameter<T> Matching(Func<T, bool> predicate)
+		=> new PredicateParameter(predicate);
 
-	private sealed class MatchParameterPredicate(Func<T, bool> predicate) : With.MatchParameter<T>
+	private sealed class PredicateParameter(Func<T, bool> predicate) : With.Parameter<T>
 	{
 		protected override bool Matches(T value) => predicate(value);
 	}

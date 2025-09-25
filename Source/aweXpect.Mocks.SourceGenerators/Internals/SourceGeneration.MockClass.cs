@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using aweXpect.Mocks.SourceGenerators.Entities;
 using Type = aweXpect.Mocks.SourceGenerators.Entities.Type;
 
@@ -33,11 +34,15 @@ internal static partial class SourceGeneration
 		foreach (Property property in mockClass.Properties)
 		{
 			sb.Append("\t\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(property.Name).AppendLine("\" />");
-			sb.Append("\t\t").Append(property.Accessibility.ToVisibilityString()).Append(' ')
-				.Append(property.Type.GetMinimizedString(namespaces))
+			sb.Append("\t\t").Append(property.Accessibility.ToVisibilityString()).Append(' ');
+			if (!mockClass.IsInterface && property.IsVirtual)
+			{
+				sb.Append("override ");
+			}
+			sb.Append(property.Type.GetMinimizedString(namespaces))
 				.Append(" ").Append(property.Name).AppendLine();
 			sb.AppendLine("\t\t{");
-			if (property.Getter != null)
+			if (property.Getter != null && property.Getter.Value.Accessibility != Microsoft.CodeAnalysis.Accessibility.Private)
 			{
 				sb.Append("\t\t\t");
 				if (property.Getter.Value.Accessibility != property.Accessibility)
@@ -51,7 +56,7 @@ internal static partial class SourceGeneration
 					.Append(">(nameof(").Append(property.Name).AppendLine("));");
 				sb.AppendLine("\t\t\t}");
 			}
-			if (property.Setter != null)
+			if (property.Setter != null && property.Setter.Value.Accessibility != Microsoft.CodeAnalysis.Accessibility.Private)
 			{
 				sb.Append("\t\t\t");
 				if (property.Setter.Value.Accessibility != property.Accessibility)
@@ -156,7 +161,7 @@ internal static partial class SourceGeneration
 					{
 						sb.Append(", ");
 					}
-					sb.Append("With.MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
+					sb.Append("With.Parameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 
@@ -212,7 +217,7 @@ internal static partial class SourceGeneration
 					{
 						sb.Append(", ");
 					}
-					sb.Append("With.MatchParameter<").Append(parameter.Type.GetMinimizedString(namespaces))
+					sb.Append("With.Parameter<").Append(parameter.Type.GetMinimizedString(namespaces))
 						.Append("> ").Append(parameter.Name);
 				}
 

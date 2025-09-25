@@ -7,6 +7,7 @@ public sealed class DummyTests
 	{
 		bool isCalled = false;
 		Mock<IUserRepository> mock = Mock.For<IUserRepository>();
+		mock.Setup.AddUser(With.Any<string>()).Callback(() => isCalled = true).Returns(true);
 		Mock<IUserService> mock2 = Mock.For<IUserService>();
 		Mock<MyUserRepository> mock3 = Mock.For<MyUserRepository>();
 		mock3.Setup.RemoveUser("foo").Callback(() => isCalled = true).Returns(true);

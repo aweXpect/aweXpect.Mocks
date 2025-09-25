@@ -58,8 +58,8 @@ public class MethodWithReturnValueSetup<TReturn>(string name) : MethodSetup
 		throw new NotSupportedException("The method type does not match");
 	}
 
-	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
-	public override bool Matches(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.IsMatch(Invocation)" />
+	protected override bool IsMatch(Invocation invocation)
 		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
 		   methodInvocation.Parameters.Length == 0;
 }
@@ -67,7 +67,7 @@ public class MethodWithReturnValueSetup<TReturn>(string name) : MethodSetup
 /// <summary>
 ///     Setup for a method with one parameter <typeparamref name="T" /> returning <typeparamref name="TReturn" />.
 /// </summary>
-public class MethodWithReturnValueSetup<TReturn, T>(string name, With.MatchParameter match)
+public class MethodWithReturnValueSetup<TReturn, T>(string name, With.Parameter match)
 	: MethodSetup
 {
 	private Action<T>? _callback;
@@ -145,8 +145,8 @@ public class MethodWithReturnValueSetup<TReturn, T>(string name, With.MatchParam
 		throw new NotSupportedException("The method type does not match");
 	}
 
-	/// <inheritdoc cref="MethodSetup.Matches(Invocation)" />
-	public override bool Matches(Invocation invocation)
+	/// <inheritdoc cref="MethodSetup.IsMatch(Invocation)" />
+	protected override bool IsMatch(Invocation invocation)
 		=> invocation is MethodInvocation methodInvocation && methodInvocation.Name.Equals(name) &&
 		   methodInvocation.Parameters.Length == 1 && match.Matches(methodInvocation.Parameters[0]);
 }

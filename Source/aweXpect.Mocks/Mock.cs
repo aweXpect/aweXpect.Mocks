@@ -17,7 +17,7 @@ public abstract class Mock<T> : IMockSetup
 	/// <inheritdoc cref="Mock{T}" />
 	protected Mock(MockBehavior mockBehavior)
 	{
-		Behavior = mockBehavior;
+		_behavior = mockBehavior;
 	}
 
 	private readonly List<Invocation> _invocations = [];
@@ -27,7 +27,8 @@ public abstract class Mock<T> : IMockSetup
 	/// <summary>
 	/// Gets the behavior settings used by this mock instance.
 	/// </summary>
-	public MockBehavior Behavior { get; }
+	MockBehavior IMockSetup.Behavior => _behavior;
+	private MockBehavior _behavior;
 
 	/// <summary>
 	///     The registered invocations of the mock.
@@ -73,15 +74,15 @@ public abstract class Mock<T> : IMockSetup
 	{
 		Invocation invocation = RegisterInvocation(new MethodInvocation(methodName, parameters));
 
-		MethodSetup? matchingSetup = _setups.FirstOrDefault(setup => setup.Matches(invocation));
+		MethodSetup? matchingSetup = _setups.FirstOrDefault(setup => ((IMethodSetup)setup).Matches(invocation));
 		if (matchingSetup is null)
 		{
-			if (Behavior.ThrowWhenNotSetup)
+			if (_behavior.ThrowWhenNotSetup)
 			{
 				throw new MockNotSetupException($"The method '{methodName}({string.Join(",", parameters.Select(x => Formatter.Format(x?.GetType())))})' was invoked without prior setup.");
 			}
 
-			return Behavior.DefaultValueGenerator.Generate<TResult>();
+			return _behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
 		return matchingSetup.Invoke<TResult>(invocation);
@@ -94,7 +95,7 @@ public abstract class Mock<T> : IMockSetup
 	{
 		Invocation invocation = RegisterInvocation(new MethodInvocation(methodName, parameters));
 
-		MethodSetup? matchingSetup = _setups.FirstOrDefault(setup => setup.Matches(invocation));
+		MethodSetup? matchingSetup = _setups.FirstOrDefault(setup => ((IMethodSetup)setup).Matches(invocation));
 		matchingSetup?.Invoke(invocation);
 	}
 
