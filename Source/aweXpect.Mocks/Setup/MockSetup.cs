@@ -5,6 +5,10 @@
 /// </summary>
 public class MockSetup<T>(Mock<T> mock) : IMockSetup
 {
+	/// <inheritdoc cref="IMockSetup.Behavior" />
+	MockBehavior IMockSetup.Behavior
+		=> ((IMockSetup)mock).Behavior;
+
 	/// <inheritdoc cref="IMockSetup.RegisterMethod" />
 	void IMockSetup.RegisterMethod(MethodSetup methodSetup)
 		=> ((IMockSetup)mock).RegisterMethod(methodSetup);

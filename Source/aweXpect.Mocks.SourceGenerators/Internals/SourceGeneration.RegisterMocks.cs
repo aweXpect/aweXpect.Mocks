@@ -26,7 +26,7 @@ internal static partial class SourceGeneration
 		          {
 		          	private partial class MockGenerator
 		          	{
-		          		partial void Generate<T>()
+		          		partial void Generate<T>(MockBehavior mockBehavior)
 		          		{
 
 		          """;
@@ -45,7 +45,7 @@ internal static partial class SourceGeneration
 			result += $$"""
 			            if (typeof(T) == typeof({{mock.ClassName}}))
 			            			{
-			            				_value = new For{{mock.ClassName}}.Mock() as Mock<T>;
+			            				_value = new For{{mock.ClassName}}.Mock(mockBehavior) as Mock<T>;
 			            			}
 
 			            """;
