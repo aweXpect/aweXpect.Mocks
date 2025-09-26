@@ -55,6 +55,11 @@ public static class With
 		public abstract bool Matches(object? value);
 	}
 
+	/// <summary>
+	///     A named <see cref="Parameter"/>.
+	/// </summary>
+	/// <param name="Name">The name of the <paramref name="Parameter"/>.</param>
+	/// <param name="Parameter">The actual <see cref="Parameter"/>.</param>
 	public record NamedParameter(string Name, Parameter Parameter);
 
 	/// <summary>

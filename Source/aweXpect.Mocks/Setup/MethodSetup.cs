@@ -5,32 +5,6 @@ using aweXpect.Mocks.Invocations;
 
 namespace aweXpect.Mocks.Setup;
 
-public class MethodSetupResult(MethodSetup? setup, MockBehavior behavior)
-{
-	public T SetOutParameter<T>(string parameterName)
-	{
-		if (setup is not null)
-		{
-			return setup.SetOutParameter<T>(parameterName, behavior);
-		}
-
-		return behavior.DefaultValueGenerator.Generate<T>();
-	}
-	public T SetRefParameter<T>(string parameterName, T value)
-	{
-		if (setup is not null)
-		{
-			return setup.SetRefParameter<T>(parameterName, behavior, value);
-		}
-
-		return behavior.DefaultValueGenerator.Generate<T>();
-	}
-}
-public class MethodSetupResult<TResult>(MethodSetup? setup, MockBehavior behavior, TResult result) : MethodSetupResult(setup, behavior)
-{
-	public TResult Result { get; } = result;
-}
-
 /// <summary>
 ///     Base class for method setups.
 /// </summary>
