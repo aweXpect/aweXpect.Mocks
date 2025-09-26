@@ -41,7 +41,7 @@ public abstract class Mock<T> : IMock
 	public MockSetup<T> Setup { get; }
 
 	/// <inheritdoc cref="IMock.Execute{TResult}(string, object?[])" />
-	TResult IMock.Execute<TResult>(string methodName, params object?[] parameters)
+	MethodSetupResult<TResult> IMock.Execute<TResult>(string methodName, params object?[] parameters)
 	{
 		Invocation invocation = Invoked.RegisterInvocation(new MethodInvocation(methodName, parameters));
 
@@ -53,14 +53,14 @@ public abstract class Mock<T> : IMock
 				throw new MockNotSetupException($"The method '{methodName}({string.Join(",", parameters.Select(x => Formatter.Format(x?.GetType())))})' was invoked without prior setup.");
 			}
 
-			return Behavior.DefaultValueGenerator.Generate<TResult>();
+			return new MethodSetupResult<TResult>(matchingSetup, Behavior, Behavior.DefaultValueGenerator.Generate<TResult>());
 		}
 
-		return matchingSetup.Invoke<TResult>(invocation, Behavior);
+		return new MethodSetupResult<TResult>(matchingSetup, Behavior, matchingSetup.Invoke<TResult>(invocation, Behavior));
 	}
 
 	/// <inheritdoc cref="IMock.Execute(string, object?[])" />
-	void IMock.Execute(string methodName, params object?[] parameters)
+	MethodSetupResult IMock.Execute(string methodName, params object?[] parameters)
 	{
 		Invocation invocation = Invoked.RegisterInvocation(new MethodInvocation(methodName, parameters));
 
@@ -71,6 +71,7 @@ public abstract class Mock<T> : IMock
 		}
 
 		matchingSetup?.Invoke(invocation);
+		return new MethodSetupResult(matchingSetup, Behavior);
 	}
 
 	/// <inheritdoc cref="IMock.Set(string, object?)" />

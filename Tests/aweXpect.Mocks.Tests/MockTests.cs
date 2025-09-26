@@ -29,7 +29,7 @@ public class MockTests
 
 		sut.HiddenSetup.RegisterMethod(setup);
 
-		int value = sut.Hidden.Execute<int>("my-method");
+		int value = sut.Hidden.Execute<int>("my-method").Result;
 
 		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(1);
 		await That(value).IsEqualTo(42);
@@ -56,7 +56,7 @@ public class MockTests
 		MyMock<string> sut = new("foo");
 		sut.HiddenSetup.RegisterMethod(new MethodWithReturnValueSetup<int>("my-method").Returns(0));
 
-		int value = sut.Hidden.Execute<int>("my-method");
+		int value = sut.Hidden.Execute<int>("my-method").Result;
 		sut.Hidden.Get<int>("my-get-property");
 		sut.Hidden.Set("my-set-property", 42);
 

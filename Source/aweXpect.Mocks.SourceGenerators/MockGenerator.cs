@@ -9,24 +9,29 @@ using Microsoft.CodeAnalysis.Text;
 namespace aweXpect.Mocks.SourceGenerators;
 
 /// <summary>
-///     The <see cref="IIncrementalGenerator" /> for generating mocks.
+///     The <see cref="IIncrementalGenerator" /> for the registration of mocks.
 /// </summary>
 [Generator]
 public class MockGenerator : IIncrementalGenerator
 {
 	void IIncrementalGenerator.Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		IncrementalValuesProvider<MockClass> expectationsToGenerate = context.SyntaxProvider
+		context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+			"Mock.g.cs",
+			SourceText.From(SourceGeneration.Mock, Encoding.UTF8)));
+
+		IncrementalValueProvider<ImmutableArray<MockClass?>> expectationsToRegister = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				static (s, _) => s.IsMockForInvocationExpressionSyntax(),
 				(ctx, _) => GetSemanticTargetForGeneration(ctx))
 			.Where(static m => m is not null)
-			.SelectMany((x, _) => x!.Distinct().ToImmutableArray());
+			.Collect();
 
-		context.RegisterSourceOutput(expectationsToGenerate, (spc, source) => Execute(source, spc));
+		context.RegisterSourceOutput(expectationsToRegister,
+			(spc, source) => Execute([..source.Where(t => t != null).Distinct().Cast<MockClass>(),], spc));
 	}
 
-	private static IEnumerable<MockClass> GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
+	private static MockClass? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
 	{
 		if (context.Node.TryExtractGenericNameSyntax(context.SemanticModel, out GenericNameSyntax? genericNameSyntax))
 		{
@@ -38,14 +43,22 @@ public class MockGenerator : IIncrementalGenerator
 				.Cast<ITypeSymbol>()
 				.ToArray();
 			MockClass mockClassClass = new(types);
-			yield return mockClassClass;
+			return mockClassClass;
 		}
+
+		return null;
 	}
 
-	private static void Execute(MockClass mockClass, SourceProductionContext context)
+	private static void Execute(ImmutableArray<MockClass> mocksToGenerate, SourceProductionContext context)
 	{
-		string result = SourceGeneration.GetMockClass(mockClass);
-		// Create a separate class file for each mock
-		context.AddSource(mockClass.FileName, SourceText.From(result, Encoding.UTF8));
+		foreach (var mockToGenerate in mocksToGenerate)
+		{
+			string result = SourceGeneration.GetMockClass(mockToGenerate);
+			// Create a separate class file for each mock
+			context.AddSource(mockToGenerate.FileName, SourceText.From(result, Encoding.UTF8));
+		}
+
+		context.AddSource("Mock.Registration.g.cs",
+			SourceText.From(SourceGeneration.RegisterMocks(mocksToGenerate), Encoding.UTF8));
 	}
 }

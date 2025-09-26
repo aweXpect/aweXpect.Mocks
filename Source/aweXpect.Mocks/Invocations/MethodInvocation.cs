@@ -13,5 +13,5 @@ public class MethodInvocation(string name, object?[] parameters) : Invocation
 	/// <summary>
 	///     The parameters of the method.
 	/// </summary>
-	public object?[] Parameters { get; } = parameters;
+	public object?[] Parameters { get; } = parameters ?? [null];
 }

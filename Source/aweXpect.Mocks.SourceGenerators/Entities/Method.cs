@@ -22,27 +22,4 @@ internal readonly record struct Method
 	public Type ReturnType { get; }
 	public string Name { get; }
 	public EquatableArray<MethodParameter> Parameters { get; }
-
-	public void AppendSignatureTo(StringBuilder sb, MockClass @class, string[] namespaces)
-	{
-		sb.Append(Accessibility.ToVisibilityString()).Append(' ');
-		if (!@class.IsInterface && IsVirtual)
-		{
-			sb.Append("override ");
-		}
-		sb.Append(ReturnType.GetMinimizedString(namespaces)).Append(' ')
-			.Append(Name).Append('(');
-		int index = 0;
-		foreach (MethodParameter parameter in Parameters)
-		{
-			if (index++ > 0)
-			{
-				sb.Append(", ");
-			}
-
-			sb.Append(parameter.Type.GetMinimizedString(namespaces)).Append(' ').Append(parameter.Name);
-		}
-
-		sb.Append(')');
-	}
 }

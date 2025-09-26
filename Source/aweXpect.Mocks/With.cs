@@ -1,4 +1,5 @@
 using System;
+using aweXpect.Customization;
 
 namespace aweXpect.Mocks;
 
@@ -11,6 +12,31 @@ public static class With
 	///     Matches any parameter of type <typeparamref name="T" />.
 	/// </summary>
 	public static Parameter<T> Any<T>() => new AnyParameter<T>();
+
+	/// <summary>
+	///     Matches any <see langword="out"/> parameter of type <typeparamref name="T" />.
+	/// </summary>
+	public static OutParameter<T> Out<T>(Func<T> setter) => new OutParameter<T>(setter);
+
+	/// <summary>
+	///     Matches any <see langword="out"/> parameter of type <typeparamref name="T" />.
+	/// </summary>
+	public static InvocationOutParameter<T> Out<T>() => new InvocationOutParameter<T>();
+
+	/// <summary>
+	///     Matches any <see langword="ref"/> parameter of type <typeparamref name="T" />.
+	/// </summary>
+	public static InvocationRefParameter<T> Ref<T>() => new InvocationRefParameter<T>();
+
+	/// <summary>
+	///     Matches any <see langword="ref"/> parameter of type <typeparamref name="T" />.
+	/// </summary>
+	public static RefParameter<T> Ref<T>(Func<T, T> setter) => new RefParameter<T>(_ => true, setter);
+
+	/// <summary>
+	///     Matches any <see langword="ref"/> parameter of type <typeparamref name="T" />.
+	/// </summary>
+	public static RefParameter<T> Ref<T>(Func<T, bool> predicate, Func<T, T> setter) => new RefParameter<T>(predicate, setter);
 
 	private sealed class AnyParameter<T> : Parameter<T>
 	{
@@ -28,6 +54,8 @@ public static class With
 		/// </summary>
 		public abstract bool Matches(object? value);
 	}
+
+	public record NamedParameter(string Name, Parameter Parameter);
 
 	/// <summary>
 	///     Matches a method parameter against an expectation.
@@ -71,6 +99,70 @@ public static class With
 			}
 
 			protected override bool Matches(T value) => Equals(value, _value);
+		}
+	}
+
+	/// <summary>
+	///     Matches a method <see langword="ref"/> parameter against an expectation.
+	/// </summary>
+	public class RefParameter<T>(Func<T, bool> predicate, Func<T, T> setter) : Parameter
+	{
+		/// <summary>
+		///     <see langword="true" />, if the <paramref name="value" /> is of type <typeparamref name="T" /> and
+		///     matches the expectation; otherwise <see langword="false" />
+		/// </summary>
+		public override bool Matches(object? value)
+		{
+			return value is T typedValue && predicate(typedValue);
+		}
+
+		internal T GetValue(T value) => setter(value);
+	}
+
+	/// <summary>
+	///     Matches a method <see langword="out"/> parameter against an expectation.
+	/// </summary>
+	public class OutParameter<T>(Func<T> setter) : Parameter
+	{
+		/// <summary>
+		///     <see langword="true" />, if the <paramref name="value" /> is of type <typeparamref name="T" /> and
+		///     matches the expectation; otherwise <see langword="false" />
+		/// </summary>
+		public override bool Matches(object? value)
+		{
+			return true;
+		}
+
+		internal T GetValue() => setter();
+	}
+
+	/// <summary>
+	///     Matches a method <see langword="out"/> parameter against an expectation.
+	/// </summary>
+	public class InvocationOutParameter<T>() : Parameter
+	{
+		/// <summary>
+		///     <see langword="true" />, if the <paramref name="value" /> is of type <typeparamref name="T" /> and
+		///     matches the expectation; otherwise <see langword="false" />
+		/// </summary>
+		public override bool Matches(object? value)
+		{
+			return true;
+		}
+	}
+
+	/// <summary>
+	///     Matches a method <see langword="out"/> parameter against an expectation.
+	/// </summary>
+	public class InvocationRefParameter<T>() : Parameter
+	{
+		/// <summary>
+		///     <see langword="true" />, if the <paramref name="value" /> is of type <typeparamref name="T" /> and
+		///     matches the expectation; otherwise <see langword="false" />
+		/// </summary>
+		public override bool Matches(object? value)
+		{
+			return true;
 		}
 	}
 }
