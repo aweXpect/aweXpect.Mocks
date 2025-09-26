@@ -22,6 +22,9 @@ public sealed class DummyTests
 
 		repository.RemoveUser("bar");
 
+		await That(mock3.Invoked.RemoveUser("bar").Invocations).HasCount(1);
+		await That(mock3.Invoked.Values.Getter().Invocations).HasCount(0);
+
 		await That(isCalled).IsFalse();
 		repository.RemoveUser("foo");
 		await That(isCalled).IsTrue();
