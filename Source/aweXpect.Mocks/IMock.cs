@@ -1,4 +1,6 @@
-﻿namespace aweXpect.Mocks;
+﻿using aweXpect.Mocks.Setup;
+
+namespace aweXpect.Mocks;
 
 /// <summary>
 ///     Allows registration of method calls and property accesses on a mock.
@@ -8,12 +10,12 @@ public interface IMock
 	/// <summary>
 	///     Executes a method and gets the setup return value.
 	/// </summary>
-	TResult Execute<TResult>(string methodName, params object?[] parameters);
+	MethodSetupResult<TResult> Execute<TResult>(string methodName, params object?[] parameters);
 
 	/// <summary>
 	///     Executes a method returning <see langword="void" />.
 	/// </summary>
-	void Execute(string methodName, params object?[] parameters);
+	MethodSetupResult Execute(string methodName, params object?[] parameters);
 
 	/// <summary>
 	///     Accesses the getter of a property.

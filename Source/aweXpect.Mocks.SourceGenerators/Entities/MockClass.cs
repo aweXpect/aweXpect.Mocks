@@ -11,7 +11,7 @@ internal record MockClass
 		ClassName = types[0].Name;
 
 		IsInterface = types[0].TypeKind == TypeKind.Interface;
-		FileName = $"MockFor{ClassName}.g.cs";
+		FileName = $"For{ClassName}.g.cs";
 		Methods = new EquatableArray<Method>(
 			types[0].GetMembers().OfType<IMethodSymbol>()
 				// Exclude getter/setter methods

@@ -8,8 +8,10 @@ internal readonly record struct MethodParameter
 	{
 		Type = new Type(parameterSymbol.Type);
 		Name = parameterSymbol.Name;
+		RefKind = parameterSymbol.RefKind;
 	}
 
 	public Type Type { get; }
 	public string Name { get; }
+	public RefKind RefKind { get; }
 }

@@ -52,4 +52,17 @@ internal static partial class SourceGeneration
 			Accessibility.ProtectedAndInternal => "protected internal",
 			_ => throw new ArgumentOutOfRangeException(nameof(accessibility), accessibility, null)
 		};
+
+
+
+	internal static string GetString(this RefKind refKind)
+		=> refKind switch
+		{
+			RefKind.None => "",
+			RefKind.In => "in ",
+			RefKind.Out => "out ",
+			RefKind.Ref => "ref ",
+			RefKind.RefReadOnlyParameter => "ref readonly ",
+			_ => ""
+		};
 }
