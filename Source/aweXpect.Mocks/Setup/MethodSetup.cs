@@ -13,11 +13,11 @@ public abstract class MethodSetup : IMethodSetup
 	/// <inheritdoc cref="IMethodSetup.InvocationCount" />
 	int IMethodSetup.InvocationCount => _invocationCount;
 
-	internal TResult Invoke<TResult>(Invocation invocation)
+	internal TResult Invoke<TResult>(Invocation invocation, MockBehavior behavior)
 	{
 		Interlocked.Increment(ref _invocationCount);
 		ExecuteCallback(invocation);
-		return GetReturnValue<TResult>(invocation);
+		return GetReturnValue<TResult>(invocation, behavior);
 	}
 
 	internal void Invoke(Invocation invocation)
@@ -34,7 +34,7 @@ public abstract class MethodSetup : IMethodSetup
 	/// <summary>
 	///     Gets the registered return value.
 	/// </summary>
-	protected abstract TResult GetReturnValue<TResult>(Invocation invocation);
+	protected abstract TResult GetReturnValue<TResult>(Invocation invocation, MockBehavior behavior);
 
 	/// <inheritdoc cref="IMethodSetup.Matches(Invocation)" />
 	bool IMethodSetup.Matches(Invocation invocation)
