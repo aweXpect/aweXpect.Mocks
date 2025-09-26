@@ -4,9 +4,9 @@ using System.Linq;
 namespace aweXpect.Mocks.Invocations;
 
 /// <summary>
-///     The invocations of the <see cref="Mock{T}" /> <paramref name="mock" />
+///     The invocations of the <see cref="Mock{T}" />
 /// </summary>
-public class MockInvocations<T>(Mock<T> mock) : IMockInvocations
+public class MockInvocations<T> : IMockInvocations
 {
 	/// <summary>
 	/// Indicates whether (at least) one invocation was already triggered.
@@ -22,7 +22,6 @@ public class MockInvocations<T>(Mock<T> mock) : IMockInvocations
 
 	internal Invocation RegisterInvocation(Invocation invocation)
 	{
-		_ = mock;
 		_invocations.Add(invocation);
 		return invocation;
 	}

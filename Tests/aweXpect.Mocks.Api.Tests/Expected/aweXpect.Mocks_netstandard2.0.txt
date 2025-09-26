@@ -94,7 +94,7 @@ namespace aweXpect.Mocks.Invocations
     }
     public class MockInvocations<T> : aweXpect.Mocks.Invocations.IMockInvocations
     {
-        public MockInvocations(aweXpect.Mocks.Mock<T> mock) { }
+        public MockInvocations() { }
         public System.Collections.Generic.IReadOnlyList<aweXpect.Mocks.Invocations.Invocation> Invocations { get; }
     }
     public class PropertyGetterInvocation : aweXpect.Mocks.Invocations.Invocation

@@ -16,7 +16,7 @@ public abstract class Mock<T> : IMock
 	protected Mock(MockBehavior behavior)
 	{
 		Behavior = behavior;
-		Invoked = new MockInvocations<T>(this);
+		Invoked = new MockInvocations<T>();
 		Setup = new MockSetup<T>(this);
 	}
 
@@ -65,6 +65,11 @@ public abstract class Mock<T> : IMock
 		Invocation invocation = Invoked.RegisterInvocation(new MethodInvocation(methodName, parameters));
 
 		MethodSetup? matchingSetup = Setup.GetMethodSetup(invocation);
+		if (matchingSetup is null && Behavior.ThrowWhenNotSetup)
+		{
+			throw new MockNotSetupException($"The method '{methodName}({string.Join(",", parameters.Select(x => Formatter.Format(x?.GetType())))})' was invoked without prior setup.");
+		}
+
 		matchingSetup?.Invoke(invocation);
 	}
 
