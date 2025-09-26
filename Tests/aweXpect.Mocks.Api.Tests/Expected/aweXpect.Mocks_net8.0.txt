@@ -1,5 +1,12 @@
 [assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/aweXpect/aweXpect.Mocks.git")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
+namespace aweXpect.Mocks.Events
+{
+    public class MockRaises<T> : aweXpect.Mocks.IMockRaises
+    {
+        public MockRaises(aweXpect.Mocks.Setup.MockSetup<T> setup) { }
+    }
+}
 namespace aweXpect.Mocks.Exceptions
 {
     public abstract class MockException : System.Exception
@@ -17,10 +24,17 @@ namespace aweXpect.Mocks
 {
     public interface IMock
     {
+        aweXpect.Mocks.IMockRaises Raises { get; }
         aweXpect.Mocks.Setup.MethodSetupResult Execute(string methodName, params object?[] parameters);
         aweXpect.Mocks.Setup.MethodSetupResult<TResult> Execute<TResult>(string methodName, params object?[] parameters);
         TResult Get<TResult>(string propertyName);
         void Set(string propertyName, object? value);
+    }
+    public interface IMockRaises
+    {
+        void AddEvent(string name, object? target, System.Reflection.MethodInfo method);
+        void Raises(string eventName, params object?[] parameters);
+        void RemoveEvent(string name, object? target, System.Reflection.MethodInfo method);
     }
     public class MockBehavior : System.IEquatable<aweXpect.Mocks.MockBehavior>
     {
@@ -39,6 +53,7 @@ namespace aweXpect.Mocks
         public aweXpect.Mocks.MockBehavior Behavior { get; }
         public aweXpect.Mocks.Invocations.MockInvocations<T> Invoked { get; }
         public abstract T Object { get; }
+        public aweXpect.Mocks.Events.MockRaises<T> Raises { get; }
         public aweXpect.Mocks.Setup.MockSetup<T> Setup { get; }
         public static T op_Implicit(aweXpect.Mocks.Mock<T> mock) { }
     }

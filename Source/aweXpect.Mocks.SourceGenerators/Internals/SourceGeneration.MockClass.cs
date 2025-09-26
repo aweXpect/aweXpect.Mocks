@@ -18,6 +18,7 @@ internal static partial class SourceGeneration
 		}
 
 		sb.Append("""
+		          using aweXpect.Mocks.Events;
 		          using aweXpect.Mocks.Invocations;
 		          using aweXpect.Mocks.Setup;
 
@@ -34,10 +35,13 @@ internal static partial class SourceGeneration
 		
 		AppendMock(sb, mockClass);
 		sb.AppendLine();
-		
+
+		AppendRaisesExtensions(sb, mockClass, namespaces);
+		sb.AppendLine();
+
 		AppendSetupExtensions(sb, mockClass, namespaces);
 		sb.AppendLine();
-		
+
 		AppendInvocationExtensions(sb, mockClass, namespaces);
 		sb.AppendLine();
 
@@ -52,6 +56,26 @@ internal static partial class SourceGeneration
 			.Append(" : ").AppendLine(mockClass.ClassName);
 		sb.AppendLine("\t{");
 		int count = 0;
+
+		foreach (Event @event in mockClass.Events)
+		{
+			if (count++ > 0)
+			{
+				sb.AppendLine();
+			}
+			sb.Append("\t\t/// <inheritdoc cref=\"").Append(mockClass.ClassName).Append('.').Append(@event.Name).AppendLine("\" />");
+			sb.Append("\t\t").Append(@event.Accessibility.ToVisibilityString()).Append(' ');
+			if (!mockClass.IsInterface && @event.IsVirtual)
+			{
+				sb.Append("override ");
+			}
+			sb.Append("event ").Append(@event.Type.GetMinimizedString(namespaces))
+				.Append("? ").Append(@event.Name).AppendLine();
+			sb.AppendLine("\t\t{");
+			sb.Append("\t\t\tadd => mock.Raises.AddEvent(nameof(").Append(@event.Name).Append("), value.Target, value.Method);").AppendLine();
+			sb.Append("\t\t\tremove => mock.Raises.RemoveEvent(nameof(").Append(@event.Name).Append("), value.Target, value.Method);").AppendLine();
+			sb.AppendLine("\t\t}");
+		}
 
 		foreach (Property property in mockClass.Properties)
 		{
@@ -193,6 +217,28 @@ internal static partial class SourceGeneration
 		sb.AppendLine();
 		sb.Append("\t\t/// <inheritdoc cref=\"Mock{").Append(mockClass.ClassName).AppendLine("}.Object\" />");
 		sb.Append("\t\tpublic override ").Append(mockClass.ClassName).AppendLine(" Object { get; }");
+		sb.AppendLine("\t}");
+	}
+
+	private static void AppendRaisesExtensions(StringBuilder sb, MockClass mockClass, string[] namespaces)
+	{
+		sb.Append("\textension(MockRaises<").Append(mockClass.ClassName).AppendLine("> mock)");
+		sb.AppendLine("\t{");
+		int count = 0;
+		foreach (Event @event in mockClass.Events)
+		{
+			if (count++ > 0)
+			{
+				sb.AppendLine();
+			}
+			sb.Append("\t\t/// <summary>").AppendLine();
+			sb.Append("\t\t///     Raises the <see cref=\"").Append(mockClass.ClassName).Append(".").Append(@event.Name).Append("\"/> event.").AppendLine();
+			sb.Append("\t\t/// </summary>").AppendLine();
+			sb.Append("\t\tpublic void ").Append(@event.Name).Append("(").Append(string.Join(", ", @event.Delegate.Parameters.Select(p => p.Type.GetMinimizedString(namespaces) + " " + p.Name))).Append(")").AppendLine();
+			sb.AppendLine("\t\t{");
+			sb.Append("\t\t\t((IMockRaises)mock).Raises(\"").Append(@event.Name).Append("\", ").Append(string.Join(", ", @event.Delegate.Parameters.Select(p => p.Name))).Append(");").AppendLine();
+			sb.AppendLine("\t\t}");
+		}
 		sb.AppendLine("\t}");
 	}
 
