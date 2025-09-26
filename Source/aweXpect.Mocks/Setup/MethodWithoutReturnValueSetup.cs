@@ -69,13 +69,11 @@ public class MethodWithoutReturnValueSetup<T1>(string name, With.NamedParameter 
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1))
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1))
-			{
-				_callback?.Invoke(p1);
-				return;
-			}
+			_callback?.Invoke(p1);
+			return;
 		}
 
 		throw new NotSupportedException("The method type does not match");
@@ -140,14 +138,12 @@ public class MethodWithoutReturnValueSetup<T1, T2>(string name, With.NamedParame
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
+			methodInvocation.Parameters[1].TryCast<T2>(out var p2))
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
-				methodInvocation.Parameters[1].TryCast<T2>(out var p2))
-			{
-				_callback?.Invoke(p1, p2);
-				return;
-			}
+			_callback?.Invoke(p1, p2);
+			return;
 		}
 
 		throw new NotSupportedException("The method type does not match");

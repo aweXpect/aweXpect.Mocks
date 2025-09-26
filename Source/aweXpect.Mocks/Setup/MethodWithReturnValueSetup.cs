@@ -129,13 +129,11 @@ public class MethodWithReturnValueSetup<TReturn, T1>(string name, With.NamedPara
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1))
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1))
-			{
-				_callback?.Invoke(p1);
-				return;
-			}
+			_callback?.Invoke(p1);
+			return;
 		}
 
 		throw new NotSupportedException("The method type does not match");
@@ -150,13 +148,12 @@ public class MethodWithReturnValueSetup<TReturn, T1>(string name, With.NamedPara
 			return behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
+			_returnCallback(p1) is TResult result)
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1) && _returnCallback(p1) is TResult result)
-			{
-				_callback?.Invoke(p1);
-				return result;
-			}
+			_callback?.Invoke(p1);
+			return result;
 		}
 
 		throw new NotSupportedException("The method type does not match");
@@ -247,14 +244,12 @@ public class MethodWithReturnValueSetup<TReturn, T1, T2>(string name, With.Named
 	/// <inheritdoc cref="MethodSetup.ExecuteCallback(Invocation)" />
 	protected override void ExecuteCallback(Invocation invocation)
 	{
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
+			methodInvocation.Parameters[1].TryCast<T2>(out var p2))
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
-				methodInvocation.Parameters[1].TryCast<T2>(out var p2))
-			{
-				_callback?.Invoke(p1, p2);
-				return;
-			}
+			_callback?.Invoke(p1, p2);
+			return;
 		}
 
 		throw new NotSupportedException("The method type does not match");
@@ -269,15 +264,13 @@ public class MethodWithReturnValueSetup<TReturn, T1, T2>(string name, With.Named
 			return behavior.DefaultValueGenerator.Generate<TResult>();
 		}
 
-		if (invocation is MethodInvocation methodInvocation)
+		if (invocation is MethodInvocation methodInvocation &&
+			methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
+			methodInvocation.Parameters[1].TryCast<T2>(out var p2) &&
+			_returnCallback(p1, p2) is TResult result)
 		{
-			if (methodInvocation.Parameters[0].TryCast<T1>(out var p1) &&
-				methodInvocation.Parameters[1].TryCast<T2>(out var p2) &&
-				_returnCallback(p1, p2) is TResult result)
-			{
-				_callback?.Invoke(p1, p2);
-				return result;
-			}
+			_callback?.Invoke(p1, p2);
+			return result;
 		}
 
 		throw new NotSupportedException("The method type does not match");
