@@ -9,12 +9,12 @@ public class MockTests
 	[Fact]
 	public async Task Execute_MethodWithoutReturnValue_ShouldIncreaseInvocationCountOfRegisteredSetup()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		MethodWithoutReturnValueSetup setup = new("my-method");
 
-		sut.RegisterMethod(setup);
+		sut.HiddenSetup.RegisterMethod(setup);
 
-		sut.Execute("my-method");
+		sut.Hidden.Execute("my-method");
 
 		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(1);
 	}
@@ -23,13 +23,13 @@ public class MockTests
 	public async Task
 		Execute_MethodWithReturnValue_ShouldIncreaseInvocationCountOfRegisteredSetupAndReturnRegisteredValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		MethodWithReturnValueSetup<int> setup = new("my-method");
 		setup.Returns(42);
 
-		sut.RegisterMethod(setup);
+		sut.HiddenSetup.RegisterMethod(setup);
 
-		int value = sut.Execute<int>("my-method");
+		int value = sut.Hidden.Execute<int>("my-method");
 
 		await That(((IMethodSetup)setup).InvocationCount).IsEqualTo(1);
 		await That(value).IsEqualTo(42);
@@ -38,13 +38,13 @@ public class MockTests
 	[Fact]
 	public async Task Get_ShouldIncreaseInvocationCountOfRegisteredSetupAndReturnRegisteredValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		PropertySetup<int> setup = new();
 		setup.InitializeWith(42);
 
-		sut.RegisterProperty("my-property", setup);
+		sut.HiddenSetup.RegisterProperty("my-property", setup);
 
-		int value = sut.Get<int>("my-property");
+		int value = sut.Hidden.Get<int>("my-property");
 
 		await That(setup.GetterInvocationCount).IsEqualTo(1);
 		await That(value).IsEqualTo(42);
@@ -54,20 +54,19 @@ public class MockTests
 	public async Task Invocations_ShouldReturnAllInvocations()
 	{
 		MyMock<string> sut = new("foo");
-		IMockSetup mockSetup = sut;
-		mockSetup.RegisterMethod(new MethodWithReturnValueSetup<int>("my-method").Returns(0));
+		sut.HiddenSetup.RegisterMethod(new MethodWithReturnValueSetup<int>("my-method").Returns(0));
 
-		int value = mockSetup.Execute<int>("my-method");
-		mockSetup.Get<int>("my-get-property");
-		mockSetup.Set("my-set-property", 42);
+		int value = sut.Hidden.Execute<int>("my-method");
+		sut.Hidden.Get<int>("my-get-property");
+		sut.Hidden.Set("my-set-property", 42);
 
-		await That(sut.Invocations).HasCount(3);
-		await That(sut.Invocations).HasItem()
+		await That(sut.Invoked.Invocations).HasCount(3);
+		await That(sut.Invoked.Invocations).HasItem()
 			.Matching<MethodInvocation>(invocation
 				=> invocation.Name == "my-method" && invocation.Parameters.Length == 0);
-		await That(sut.Invocations).HasItem()
+		await That(sut.Invoked.Invocations).HasItem()
 			.Matching<PropertyGetterInvocation>(invocation => invocation.Name == "my-get-property");
-		await That(sut.Invocations).HasItem()
+		await That(sut.Invoked.Invocations).HasItem()
 			.Matching<PropertySetterInvocation>(invocation
 				=> invocation.Name == "my-set-property" && Equals(invocation.Value, 42));
 	}
@@ -75,12 +74,12 @@ public class MockTests
 	[Fact]
 	public async Task RegisterMethod_AfterExecution_ShouldThrowNotSupportedException()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		MethodWithoutReturnValueSetup setup = new("my-method");
 
-		sut.Execute("my-method");
+		sut.Hidden.Execute("my-method");
 
-		void Act() => sut.RegisterMethod(setup);
+		void Act() => sut.HiddenSetup.RegisterMethod(setup);
 
 		await That(Act).Throws<NotSupportedException>()
 			.WithMessage("You may not register additional setups after the first usage of the mock");
@@ -90,12 +89,12 @@ public class MockTests
 	[Fact]
 	public async Task RegisterProperty_AfterExecution_ShouldThrowNotSupportedException()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		PropertySetup<int> setup = new();
 
-		sut.Execute("my-property");
+		sut.Hidden.Execute("my-property");
 
-		void Act() => sut.RegisterProperty("my-property", setup);
+		void Act() => sut.HiddenSetup.RegisterProperty("my-property", setup);
 
 		await That(Act).Throws<NotSupportedException>()
 			.WithMessage("You may not register additional setups after the first usage of the mock");
@@ -106,14 +105,14 @@ public class MockTests
 	[Fact]
 	public async Task Set_ShouldChangeGetValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		PropertySetup<int> setup = new();
 		setup.InitializeWith(42);
 
-		sut.RegisterProperty("my-property", setup);
+		sut.HiddenSetup.RegisterProperty("my-property", setup);
 
-		sut.Set("my-property", 43);
-		int value = sut.Get<int>("my-property");
+		sut.Hidden.Set("my-property", 43);
+		int value = sut.Hidden.Get<int>("my-property");
 
 		await That(value).IsEqualTo(43);
 	}
@@ -121,12 +120,12 @@ public class MockTests
 	[Fact]
 	public async Task Set_ShouldIncreaseInvocationCountOfRegisteredSetupAndReturnRegisteredValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		PropertySetup<int> setup = new();
 
-		sut.RegisterProperty("my-property", setup);
+		sut.HiddenSetup.RegisterProperty("my-property", setup);
 
-		sut.Set("my-property", 41);
+		sut.Hidden.Set("my-property", 41);
 
 		await That(setup.SetterInvocationCount).IsEqualTo(1);
 	}
@@ -134,14 +133,14 @@ public class MockTests
 	[Fact]
 	public async Task Set_WithNull_ShouldChangeGetValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 		PropertySetup<int?> setup = new();
 		setup.InitializeWith(42);
 
-		sut.RegisterProperty("my-property", setup);
+		sut.HiddenSetup.RegisterProperty("my-property", setup);
 
-		sut.Set("my-property", null);
-		int? value = sut.Get<int?>("my-property");
+		sut.Hidden.Set("my-property", null);
+		int? value = sut.Hidden.Get<int?>("my-property");
 
 		await That(value).IsNull();
 	}
@@ -149,10 +148,10 @@ public class MockTests
 	[Fact]
 	public async Task Set_WithoutRegisteredSetup_ShouldChangeGetValue()
 	{
-		IMockSetup sut = new MyMock<string>("foo");
+		var sut = new MyMock<string>("foo");
 
-		sut.Set("my-unregistered-property", 43);
-		int value = sut.Get<int>("my-unregistered-property");
+		sut.Hidden.Set("my-unregistered-property", 43);
+		int value = sut.Hidden.Get<int>("my-unregistered-property");
 
 		await That(value).IsEqualTo(43);
 	}

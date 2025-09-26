@@ -4,6 +4,7 @@ namespace aweXpect.Mocks.Tests.TestHelpers;
 
 public class MyMock<T>(T @object) : Mock<T>(MockBehavior.Default)
 {
-	public IMockSetup Registration => Setup;
+	public IMockSetup HiddenSetup => Setup;
+	public IMock Hidden => this;
 	public override T Object => @object;
 }

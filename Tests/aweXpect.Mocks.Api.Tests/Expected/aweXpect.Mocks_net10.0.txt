@@ -13,32 +13,15 @@ namespace aweXpect.Mocks.Exceptions
         public MockNotSetupException(string message, System.Exception innerException) { }
     }
 }
-namespace aweXpect.Mocks.Invocations
-{
-    public class Invocation
-    {
-        public Invocation() { }
-    }
-    public class MethodInvocation : aweXpect.Mocks.Invocations.Invocation
-    {
-        public MethodInvocation(string name, object?[] parameters) { }
-        public string Name { get; }
-        public object?[] Parameters { get; }
-    }
-    public class PropertyGetterInvocation : aweXpect.Mocks.Invocations.Invocation
-    {
-        public PropertyGetterInvocation(string propertyName) { }
-        public string Name { get; }
-    }
-    public class PropertySetterInvocation : aweXpect.Mocks.Invocations.Invocation
-    {
-        public PropertySetterInvocation(string propertyName, object? value) { }
-        public string Name { get; }
-        public object? Value { get; }
-    }
-}
 namespace aweXpect.Mocks
 {
+    public interface IMock
+    {
+        void Execute(string methodName, params object?[] parameters);
+        TResult Execute<TResult>(string methodName, params object?[] parameters);
+        TResult Get<TResult>(string propertyName);
+        void Set(string propertyName, object? value);
+    }
     public class MockBehavior : System.IEquatable<aweXpect.Mocks.MockBehavior>
     {
         public MockBehavior() { }
@@ -50,10 +33,11 @@ namespace aweXpect.Mocks
             T Generate<T>();
         }
     }
-    public abstract class Mock<T> : aweXpect.Mocks.Setup.IMockSetup
+    public abstract class Mock<T> : aweXpect.Mocks.IMock
     {
-        protected Mock(aweXpect.Mocks.MockBehavior mockBehavior) { }
-        public System.Collections.Generic.IReadOnlyList<aweXpect.Mocks.Invocations.Invocation> Invocations { get; }
+        protected Mock(aweXpect.Mocks.MockBehavior behavior) { }
+        public aweXpect.Mocks.MockBehavior Behavior { get; }
+        public aweXpect.Mocks.Invocations.MockInvocations<T> Invoked { get; }
         public abstract T Object { get; }
         public aweXpect.Mocks.Setup.MockSetup<T> Setup { get; }
         public static T op_Implicit(aweXpect.Mocks.Mock<T> mock) { }
@@ -79,6 +63,52 @@ namespace aweXpect.Mocks
         public static aweXpect.Mocks.With.Parameter<T> Matching(System.Func<T, bool> predicate) { }
     }
 }
+namespace aweXpect.Mocks.Invocations
+{
+    public interface IMockInvocations
+    {
+        aweXpect.Mocks.Invocations.Invocation[] Method(string methodName, params aweXpect.Mocks.With.Parameter[] parameters);
+        aweXpect.Mocks.Invocations.Invocation[] PropertyGetter(string propertyName);
+        aweXpect.Mocks.Invocations.Invocation[] PropertySetter(string propertyName, aweXpect.Mocks.With.Parameter value);
+    }
+    public class Invocation
+    {
+        public Invocation() { }
+    }
+    public class InvocationResult
+    {
+        public InvocationResult(aweXpect.Mocks.Invocations.Invocation[] invocations) { }
+        public aweXpect.Mocks.Invocations.Invocation[] Invocations { get; }
+        public class Property<T>
+        {
+            public Property(aweXpect.Mocks.Invocations.IMockInvocations mockInvocations, string propertyName) { }
+            public aweXpect.Mocks.Invocations.InvocationResult Getter() { }
+            public aweXpect.Mocks.Invocations.InvocationResult Setter(aweXpect.Mocks.With.Parameter<T> value) { }
+        }
+    }
+    public class MethodInvocation : aweXpect.Mocks.Invocations.Invocation
+    {
+        public MethodInvocation(string name, object?[] parameters) { }
+        public string Name { get; }
+        public object?[] Parameters { get; }
+    }
+    public class MockInvocations<T> : aweXpect.Mocks.Invocations.IMockInvocations
+    {
+        public MockInvocations() { }
+        public System.Collections.Generic.IReadOnlyList<aweXpect.Mocks.Invocations.Invocation> Invocations { get; }
+    }
+    public class PropertyGetterInvocation : aweXpect.Mocks.Invocations.Invocation
+    {
+        public PropertyGetterInvocation(string propertyName) { }
+        public string Name { get; }
+    }
+    public class PropertySetterInvocation : aweXpect.Mocks.Invocations.Invocation
+    {
+        public PropertySetterInvocation(string propertyName, object? value) { }
+        public string Name { get; }
+        public object? Value { get; }
+    }
+}
 namespace aweXpect.Mocks.Setup
 {
     public interface IMethodSetup
@@ -88,13 +118,8 @@ namespace aweXpect.Mocks.Setup
     }
     public interface IMockSetup
     {
-        aweXpect.Mocks.MockBehavior Behavior { get; }
-        void Execute(string methodName, params object?[] parameters);
-        TResult Execute<TResult>(string methodName, params object?[] parameters);
-        TResult Get<TResult>(string propertyName);
         void RegisterMethod(aweXpect.Mocks.Setup.MethodSetup methodSetup);
         void RegisterProperty(string propertyName, aweXpect.Mocks.Setup.PropertySetup propertySetup);
-        void Set(string propertyName, object? value);
     }
     public abstract class MethodSetup : aweXpect.Mocks.Setup.IMethodSetup
     {

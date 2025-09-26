@@ -16,9 +16,9 @@ public class MethodWithReturnValueSetupTests
 			bool isCalled = false;
 			var sut = new MethodWithReturnValueSetup<int>("FooMethod");
 			sut.Callback(() => { isCalled = true; });
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			mock.Registration.Execute<int>(calledMethod);
+			((IMock)mock).Execute<int>(calledMethod);
 
 			await That(isCalled).IsEqualTo(expectedResult);
 		}
@@ -31,9 +31,9 @@ public class MethodWithReturnValueSetupTests
 			var mock = new MyMock<int>(3);
 			var sut = new MethodWithReturnValueSetup<int>("FooMethod");
 			sut.Returns(42);
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			int result = mock.Registration.Execute<int>(calledMethod);
+			int result = ((IMock)mock).Execute<int>(calledMethod);
 
 			await That(result).IsEqualTo(expectedValue);
 		}
@@ -46,9 +46,9 @@ public class MethodWithReturnValueSetupTests
 			var mock = new MyMock<int>(3);
 			var sut = new MethodWithReturnValueSetup<int>("FooMethod");
 			sut.Returns(() => 42);
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			int result = mock.Registration.Execute<int>(calledMethod);
+			int result = ((IMock)mock).Execute<int>(calledMethod);
 
 			await That(result).IsEqualTo(expectedValue);
 		}
@@ -64,9 +64,9 @@ public class MethodWithReturnValueSetupTests
 			bool isCalled = false;
 			var sut = new MethodWithReturnValueSetup<int, string>("FooMethod", With.Any<string>());
 			sut.Callback(() => { isCalled = true; });
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			mock.Registration.Execute<int>(calledMethod, "bar");
+			((IMock)mock).Execute<int>(calledMethod, "bar");
 
 			await That(isCalled).IsEqualTo(expectedResult);
 		}
@@ -79,9 +79,9 @@ public class MethodWithReturnValueSetupTests
 			var mock = new MyMock<int>(3);
 			var sut = new MethodWithReturnValueSetup<int, string>("FooMethod", With.Any<string>());
 			sut.Returns(42);
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			int result = mock.Registration.Execute<int>(calledMethod, "bar");
+			int result = ((IMock)mock).Execute<int>(calledMethod, "bar");
 
 			await That(result).IsEqualTo(expectedValue);
 		}
@@ -94,9 +94,9 @@ public class MethodWithReturnValueSetupTests
 			var mock = new MyMock<int>(3);
 			var sut = new MethodWithReturnValueSetup<int, string>("FooMethod", With.Any<string>());
 			sut.Returns(() => 42);
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			int result = mock.Registration.Execute<int>(calledMethod, "bar");
+			int result = ((IMock)mock).Execute<int>(calledMethod, "bar");
 
 			await That(result).IsEqualTo(expectedValue);
 		}
@@ -111,9 +111,9 @@ public class MethodWithReturnValueSetupTests
 				receivedParameter = p;
 				return 42;
 			});
-			mock.Registration.RegisterMethod(sut);
+			mock.HiddenSetup.RegisterMethod(sut);
 
-			int result = mock.Registration.Execute<int>("FooMethod", "bar");
+			int result = ((IMock)mock).Execute<int>("FooMethod", "bar");
 
 			await That(result).IsEqualTo(42);
 			await That(receivedParameter).IsEqualTo("bar");
