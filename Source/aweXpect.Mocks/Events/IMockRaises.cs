@@ -4,7 +4,7 @@ using System.Reflection;
 namespace aweXpect.Mocks;
 
 /// <summary>
-///     Allows registration of method calls and property accesses on a mock.
+///     Provides methods for managing events on a mock object, including raising events and associating or dissociating event handlers.
 /// </summary>
 public interface IMockRaises
 {
