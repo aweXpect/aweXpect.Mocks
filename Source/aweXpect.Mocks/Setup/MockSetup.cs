@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using aweXpect.Mocks.Invocations;
 
 namespace aweXpect.Mocks.Setup;
@@ -12,6 +14,7 @@ public class MockSetup<T>(Mock<T> mock) : IMockSetup
 {
 	private readonly Dictionary<string, PropertySetup> _propertySetups = [];
 	private readonly List<MethodSetup> _methodSetups = [];
+	private ConcurrentDictionary<(object?, MethodInfo, string), bool>? _eventHandlers;
 
 	/// <inheritdoc cref="IMockSetup.RegisterMethod" />
 	void IMockSetup.RegisterMethod(MethodSetup methodSetup)
@@ -60,5 +63,33 @@ public class MockSetup<T>(Mock<T> mock) : IMockSetup
 		}
 
 		return matchingSetup;
+	}
+
+	internal IEnumerable<(object?, MethodInfo)> GetEventHandlers(string eventName)
+	{
+		if (_eventHandlers is null)
+		{
+			yield break;
+		}
+
+		foreach (var (target, method, name) in _eventHandlers.Keys)
+		{
+			if (name != eventName)
+			{
+				continue;
+			}
+			yield return (target, method);
+		}
+	}
+
+	internal void AddEvent(string eventName, object? target, MethodInfo method)
+	{
+		_eventHandlers ??= new ConcurrentDictionary<(object?, MethodInfo, string), bool>();
+		_eventHandlers.TryAdd((target, method, eventName), true);
+	}
+
+	internal void RemoveEvent(string eventName, object? target, MethodInfo method)
+	{
+		_eventHandlers?.TryRemove((target, method, eventName), out _);
 	}
 }

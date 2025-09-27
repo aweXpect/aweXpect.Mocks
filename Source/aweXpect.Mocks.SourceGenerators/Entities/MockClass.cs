@@ -24,13 +24,22 @@ internal record MockClass
 				.Where(x => IsInterface || x.IsVirtual)
 				.Select(x => new Property(x))
 				.ToArray());
+		Events = new EquatableArray<Event>(
+			types[0].GetMembers().OfType<IEventSymbol>()
+				.Where(x => IsInterface || x.IsVirtual)
+				.Select(x => (x, (x.Type as INamedTypeSymbol)?.DelegateInvokeMethod))
+				.Where(x => x.DelegateInvokeMethod is not null)
+				.Select(x => new Event(x.x, x.DelegateInvokeMethod!))
+				.ToArray());
 	}
+
+	public EquatableArray<Method> Methods { get; }
 
 	public EquatableArray<Property> Properties { get; }
 
-	public bool IsInterface { get; }
+	public EquatableArray<Event> Events { get; }
 
-	public EquatableArray<Method> Methods { get; }
+	public bool IsInterface { get; }
 	public string FileName { get; }
 	public string Namespace { get; }
 	public string ClassName { get; }

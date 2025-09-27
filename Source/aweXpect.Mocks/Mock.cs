@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using aweXpect.Formatting;
+using aweXpect.Mocks.Events;
 using aweXpect.Mocks.Exceptions;
 using aweXpect.Mocks.Invocations;
 using aweXpect.Mocks.Setup;
-using aweXpect.Formatting;
 using static aweXpect.Formatting.Format;
 
 namespace aweXpect.Mocks;
@@ -18,6 +22,7 @@ public abstract class Mock<T> : IMock
 		Behavior = behavior;
 		Invoked = new MockInvocations<T>();
 		Setup = new MockSetup<T>(this);
+		Raises = new MockRaises<T>(Setup);
 	}
 
 	/// <summary>
@@ -34,6 +39,14 @@ public abstract class Mock<T> : IMock
 	///     Exposes the mocked object instance.
 	/// </summary>
 	public abstract T Object { get; }
+
+	/// <summary>
+	///     Allows raising events on the mock.
+	/// </summary>
+	public MockRaises<T> Raises { get; }
+
+	/// <inheritdoc cref="IMock.Raises" />
+	IMockRaises IMock.Raises => Raises;
 
 	/// <summary>
 	///     Allows setting up the mock.

@@ -1,4 +1,5 @@
-﻿using aweXpect.Mocks.Setup;
+﻿using System;
+using aweXpect.Mocks.Setup;
 
 namespace aweXpect.Mocks;
 
@@ -8,22 +9,27 @@ namespace aweXpect.Mocks;
 public interface IMock
 {
 	/// <summary>
-	///     Executes a method and gets the setup return value.
+	///     Executes the method with <paramref name="methodName"/> and the matching <paramref name="parameters"/> and gets the setup return value.
 	/// </summary>
 	MethodSetupResult<TResult> Execute<TResult>(string methodName, params object?[] parameters);
 
 	/// <summary>
-	///     Executes a method returning <see langword="void" />.
+	///     Executes the method with <paramref name="methodName"/> and the matching <paramref name="parameters"/> returning <see langword="void" />.
 	/// </summary>
 	MethodSetupResult Execute(string methodName, params object?[] parameters);
 
 	/// <summary>
-	///     Accesses the getter of a property.
+	///     Accesses the getter of the property with <paramref name="propertyName"/>.
 	/// </summary>
 	TResult Get<TResult>(string propertyName);
 
 	/// <summary>
-	///     Accesses the setter of a property.
+	///     Accesses the setter of the property with <paramref name="propertyName"/> and the matching <paramref name="value"/>.
 	/// </summary>
 	void Set(string propertyName, object? value);
+
+	/// <summary>
+	///     Gets the interface used to raise events on the mock object.
+	/// </summary>
+	IMockRaises Raises { get; }
 }
