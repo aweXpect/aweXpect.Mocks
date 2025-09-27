@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Reflection;
 using aweXpect.Mocks.Invocations;
@@ -91,7 +90,6 @@ public class MockSetup<T>(Mock<T> mock) : IMockSetup
 
 	internal void RemoveEvent(string eventName, object? target, MethodInfo method)
 	{
-		_eventHandlers ??= new ConcurrentDictionary<(object?, MethodInfo, string), bool>();
-		_eventHandlers.TryRemove((target, method, eventName), out _);
+		_eventHandlers?.TryRemove((target, method, eventName), out _);
 	}
 }
